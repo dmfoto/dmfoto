@@ -1,0 +1,3391 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DMFOTO — Fotografia Esportiva</title>
+  <meta name="description" content="DMFOTO — Fotografia esportiva profissional. Encontre as fotos do seu evento e compre com segurança na plataforma parceira." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&family=Sora:wght@400;600;700;800&family=Archivo:wght@400;600;700;800&family=Barlow+Condensed:ital,wght@0,700;0,800;0,900;1,700;1,800;1,900&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+  <style>
+/* ─── CSS Variables ─────────────────────────────────────────── */
+:root {
+  --accent: #e0e0e0;
+  --accent-dim: rgba(220,220,220,0.10);
+  --accent-glow: rgba(200,200,200,0.20);
+  --accent-text: #ffffff;
+  --bg-primary: #080808;
+  --bg-surface: #111111;
+  --bg-surface-2: #181818;
+  --bg-surface-3: #222222;
+  --border: #2a2a2a;
+  --border-light: #383838;
+  --text-primary: #f0f0f0;
+  --text-secondary: #888888;
+  --text-muted: #444444;
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
+  --font-mono: 'Space Mono', monospace;
+  --font-condensed: 'Barlow Condensed', sans-serif;
+  --radius: 18px;
+  --radius-sm: 10px;
+  --radius-xs: 6px;
+  --nav-h: 68px;
+  --section-gap: 100px;
+  --container: 1200px;
+}
+
+/* ─── Reset ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+img, svg { display: block; }
+button { cursor: pointer; border: none; background: none; font-family: inherit; }
+input, select, textarea { font-family: inherit; }
+a { color: inherit; text-decoration: none; }
+
+/* ─── Utilities ─────────────────────────────────────────────── */
+.container { width: 100%; padding: 0 24px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 24px; border-radius: 0;
+  font-weight: 700; font-size: 0.95rem; line-height: 1;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  transition: all 0.2s ease; white-space: nowrap;
+}
+.btn-primary { background: #fff; color: #080808; font-weight: 800; box-shadow: 0 0 24px rgba(255,255,255,0.12); }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 24px rgba(255,255,255,0.18); filter: brightness(0.95); }
+.btn-outline { background: transparent; color: var(--text-primary); border: 1.5px solid var(--border-light); font-weight: 700; }
+.btn-outline:hover { border-color: var(--accent); color: var(--accent-text); transform: translateY(-2px); }
+.btn-ghost { color: var(--text-secondary); padding: 12px 16px; }
+.btn-ghost:hover { color: var(--text-primary); }
+.btn-sm { padding: 8px 16px; font-size: 0.85rem; }
+.btn-lg { padding: 16px 32px; font-size: 1.05rem; }
+
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: 99px;
+  font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700;
+  letter-spacing: 0.04em; text-transform: uppercase;
+}
+.badge-available { background: rgba(255,255,255,0.08); color: #d4d4d4; border: 1px solid rgba(255,255,255,0.15); }
+.badge-editing   { background: rgba(255,255,255,0.05); color: #999999; border: 1px solid rgba(255,255,255,0.10); }
+.badge-soon      { background: rgba(255,255,255,0.04); color: #666666; border: 1px solid rgba(255,255,255,0.08); }
+.badge-accent    { background: var(--accent-dim); color: var(--accent-text); border: 1px solid rgba(255,255,255,0.15); }
+
+.tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 8px; border-radius: var(--radius-xs);
+  font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  background: rgba(255,255,255,0.05); color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+.section-label {
+  font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--text-secondary); margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.section-label::before {
+  content: ''; display: block; width: 20px; height: 2px;
+  background: var(--border-light); border-radius: 2px;
+}
+h1,h2,h3,h4 { line-height: 1.15; font-weight: 800; }
+
+/* ─── Placeholder Image ──────────────────────────────────────── */
+.placeholder-img { position: relative; overflow: hidden; background: var(--bg-surface-2); }
+.placeholder-img::before {
+  content: ''; position: absolute; inset: 0;
+  background: repeating-linear-gradient(45deg,transparent,transparent 18px,rgba(255,255,255,0.018) 18px,rgba(255,255,255,0.018) 36px);
+}
+.placeholder-img .ph-gradient {
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg,var(--sport-color,#3b82f6) 0%,transparent 70%);
+  opacity: 0.22;
+}
+.placeholder-img .ph-content {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+}
+.placeholder-img .ph-icon { opacity: 0.35; }
+.placeholder-img .ph-label {
+  font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text-secondary); opacity: 0.6;
+}
+
+/* ─── Photo Gallery (HomePage featured section) ─────────────── */
+.photo-gallery-grid {
+  display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 16px;
+}
+.photo-placeholder {
+  aspect-ratio: 4/5; background: var(--bg-surface-2);
+  border: 1.5px dashed var(--border-light); border-radius: var(--radius-sm);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 8px; cursor: pointer; transition: all 0.2s; color: var(--text-muted);
+}
+.photo-placeholder:hover { border-color: var(--accent); background: var(--accent-dim); color: var(--accent-text); }
+.photo-placeholder .ph-upload-label {
+  font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase;
+}
+
+/* ─── Navbar ─────────────────────────────────────────────────── */
+.navbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--nav-h); background: rgba(6,8,13,0.92);
+  backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.08);
+  display: flex; align-items: center; transition: background 0.3s;
+}
+.navbar .container { display: flex; align-items: center; gap: 0; position: relative; justify-content: space-between; }
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--font-condensed); font-style: italic; font-weight: 900;
+  font-size: 1.5rem; letter-spacing: 0.02em; text-transform: uppercase;
+  white-space: nowrap; color: var(--text-primary);
+}
+.nav-logo .logo-dot { color: var(--accent); }
+.nav-logo .logo-icon {
+  width: 34px; height: 34px; border-radius: 6px;
+  background: var(--accent-dim); border: 1px solid rgba(255,255,255,0.15);
+  display: flex; align-items: center; justify-content: center;
+}
+.nav-links { display: flex; align-items: center; gap: 4px; position: absolute; left: 50%; transform: translateX(-50%); }
+.nav-link {
+  padding: 8px 14px; border-radius: 0;
+  font-size: 0.82rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--text-secondary); transition: all 0.15s;
+}
+.nav-link:hover { color: var(--text-primary); background: rgba(255,255,255,0.05); }
+.nav-link.active { color: var(--accent-text); background: var(--accent-dim); }
+.nav-cta { margin-left: auto; }
+.nav-cta .btn { border-radius: 0; }
+.nav-hamburger { display: none; padding: 8px; border-radius: 0; color: var(--text-primary); margin-left: auto; }
+.mobile-menu {
+  display: none; position: fixed; top: var(--nav-h); left: 0; right: 0;
+  background: var(--bg-surface); border-bottom: 1px solid var(--border);
+  z-index: 99; padding: 16px 24px 20px; flex-direction: column; gap: 4px;
+}
+.mobile-menu.open { display: flex; }
+.mobile-menu .nav-link { padding: 12px 14px; width: 100%; }
+.mobile-menu .btn { width: 100%; justify-content: center; margin-top: 8px; }
+
+/* ─── Hero ───────────────────────────────────────────────────── */
+/* ─── Ticker ─────────────────────────────────────────────────── */
+.events-ticker { display: flex; align-items: center; height: 36px; background: var(--bg-surface); border-bottom: 1px solid var(--border); overflow: hidden; position: fixed; top: var(--nav-h); left: 0; right: 0; z-index: 99; }
+.ticker-label { padding: 0 16px; font-family: var(--font-mono); font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); white-space: nowrap; border-right: 1px solid var(--border); height: 100%; display: flex; align-items: center; flex-shrink: 0; }
+.ticker-track-wrap { overflow: hidden; flex: 1; height: 100%; display: flex; align-items: center; }
+.ticker-track { display: flex; gap: 40px; animation: ticker-scroll 30s linear infinite; white-space: nowrap; }
+.ticker-item { font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-secondary); letter-spacing: 0.04em; }
+@keyframes ticker-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* ─── Hero ───────────────────────────────────────────────────── */
+.hero { min-height: 100vh; display: block; padding-top: var(--nav-h); position: relative; overflow: hidden; }
+.hero-bg {
+  position: absolute; inset: 0; z-index: 0;
+  background: radial-gradient(ellipse 80% 60% at 60% 40%,rgba(255,255,255,0.03) 0%,transparent 60%),
+              radial-gradient(ellipse 50% 40% at 20% 80%,rgba(255,255,255,0.02) 0%,transparent 50%);
+}
+.hero-grid-overlay {
+  position: absolute; inset: 0; z-index: 0;
+  background-image: linear-gradient(rgba(30,39,56,0.4) 1px,transparent 1px),linear-gradient(90deg,rgba(30,39,56,0.4) 1px,transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse at center,black 30%,transparent 70%);
+}
+.hero-pitch-lines {
+  position: absolute; inset: 0; z-index: 0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 80px 80px;
+  opacity: 0.35;
+  mask-image: radial-gradient(ellipse 100% 100% at 50% 50%, black 20%, transparent 70%);
+}
+/* Hero layout */
+.hero-two-col {
+  display: flex;
+  align-items: center;
+  min-height: calc(100vh - var(--nav-h));
+  width: 100%;
+  position: relative; z-index: 1;
+  padding: 0 24px;
+}
+.hero-left-col {
+  max-width: 720px;
+  padding: 80px 0;
+}
+.hero .container { position: relative; z-index: 1; }
+.hero-inner { max-width: 700px; padding: 80px 0; margin: 0; }
+.hero-inner.center { max-width: 860px; margin: 0 auto; text-align: center; }
+.hero-inner.center .hero-actions { justify-content: center; }
+
+/* Score board */
+.hero-scoreboard {
+  display: inline-flex; margin-bottom: 24px; overflow: hidden;
+  border: 1px solid var(--border); border-radius: 0;
+}
+.hero-scoreboard .sb-seg {
+  padding: 5px 14px; font-family: var(--font-mono); font-size: 0.65rem;
+  font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  background: rgba(0,0,0,0.6); color: var(--text-muted);
+  border-right: 1px solid var(--border);
+}
+.hero-scoreboard .sb-seg:last-child { border-right: none; }
+.hero-scoreboard .sb-seg.accent { background: #fff; color: #080808; }
+
+/* H1 Pitch Side */
+.hero h1 {
+  font-family: var(--font-condensed); font-style: italic; font-weight: 900;
+  font-size: clamp(4rem,8vw,7.5rem); letter-spacing: -0.01em;
+  line-height: 0.9; text-transform: uppercase; margin-bottom: 24px;
+}
+.hero h1 .accent { color: var(--accent); }
+.hero h1 .outline {
+  color: transparent;
+  -webkit-text-stroke: 2px #fff;
+  text-stroke: 2px #fff;
+}
+.hero-sub { font-size: 1.1rem; color: var(--text-secondary); max-width: 480px; margin-bottom: 36px; line-height: 1.65; }
+.hero-inner.center .hero-sub { margin: 0 auto 36px; }
+.hero-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 0; }
+
+/* Stats bar — grid 4 colunas */
+.hero-stats {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  background: var(--bg-surface); border: 1px solid var(--border); border-radius: 0; overflow: hidden;
+  margin-top: 48px;
+}
+.hero-stat { padding: 28px 24px; text-align: center; border-right: 1px solid var(--border); }
+.hero-stat:last-child { border-right: none; }
+.hero-stat .stat-val {
+  font-family: var(--font-condensed); font-style: italic; font-weight: 900;
+  font-size: 2.6rem; color: var(--text-primary); line-height: 1; margin-bottom: 6px;
+}
+.hero-stat .stat-label { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); }
+
+/* ─── Sections ──────────────────────────────────────────────── */
+.section { padding: var(--section-gap) 0; }
+.section-header { margin-bottom: 48px; }
+.section-header h2 {
+  font-family: var(--font-condensed); font-style: italic; font-weight: 900;
+  font-size: clamp(2.2rem,4vw,3.4rem); letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+.section-header p { color: var(--text-secondary); margin-top: 12px; font-size: 1.05rem; max-width: 540px; }
+
+.cta-strip {
+  background: var(--bg-surface); border-radius: var(--radius); border: 1px solid var(--border);
+  padding: 40px 48px; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap;
+}
+.cta-strip h2 { font-size: clamp(1.4rem,2.5vw,2rem); letter-spacing: -0.03em; max-width: 480px; }
+.cta-strip p { color: var(--text-secondary); margin-top: 8px; max-width: 420px; font-size: 0.95rem; }
+
+/* ─── Event Cards (novo design) ────────────────────────────── */
+.events-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(340px,1fr)); gap: 20px; }
+.event-card {
+  background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;
+  transition: transform 0.2s,border-color 0.2s,box-shadow 0.2s; display: flex; flex-direction: column;
+  position: relative;
+}
+.event-card::after {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+  background: #fff; transform: scaleY(0); transition: transform 0.2s;
+  transform-origin: bottom; z-index: 2;
+}
+.event-card:hover { transform: translateY(-4px); border-color: var(--border-light); box-shadow: 0 12px 40px rgba(0,0,0,0.4); }
+.event-card:hover::after { transform: scaleY(1); }
+.event-card .tag { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+.event-card-cover { position: relative; aspect-ratio: 16/9; overflow: hidden; }
+.event-card-cover .placeholder-img { width: 100%; height: 100%; }
+.event-card-cover .card-tags { position: absolute; top: 12px; left: 12px; display: flex; gap: 6px; flex-wrap: wrap; }
+.event-card-cover .card-status { position: absolute; top: 12px; right: 12px; }
+
+/* Botão de visualização prominente */
+.event-card-view-link {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  background: #ffffff; color: #080808;
+  padding: 14px 20px; font-weight: 800; font-size: 0.85rem;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  box-shadow: none;
+  text-decoration: none; transition: all 0.2s; cursor: pointer;
+  border: none; width: 100%; font-family: inherit;
+}
+.event-card-view-link:hover { background: #e8e8e8; }
+
+.event-card-notify-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  background: transparent; color: var(--text-secondary);
+  padding: 12px 20px; font-weight: 600; font-size: 0.85rem;
+  border-top: 1px solid var(--border); border-bottom: none; border-left: none; border-right: none;
+  width: 100%; font-family: inherit; transition: all 0.2s;
+}
+.event-card-notify-btn:hover { background: var(--bg-surface-2); color: var(--text-primary); }
+
+.event-card-body { padding: 16px 20px 20px; flex: 1; display: flex; flex-direction: column; }
+.event-card-title { font-size: 1rem; font-weight: 800; margin-bottom: 10px; line-height: 1.3; }
+.event-card-info { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+.event-card-info-row {
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted);
+}
+.event-card-info-row .count { color: var(--accent-text); font-weight: 700; }
+
+/* Grade de 6 fotos preview */
+.event-card-photo-grid {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 5px; margin-top: 4px;
+}
+.event-card-photo-cell {
+  aspect-ratio: 4/5; background: var(--bg-surface-3);
+  border-radius: var(--radius-xs); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-muted); opacity: 0.5;
+}
+
+/* ─── Events Page ─────────────────────────────────────────────── */
+.events-header { padding: calc(var(--nav-h) + 48px) 0 32px; }
+.events-header h1 { font-size: clamp(2rem,4vw,3.2rem); letter-spacing: -0.04em; margin-bottom: 8px; }
+.search-bar {
+  display: flex; align-items: center; gap: 12px; background: var(--bg-surface);
+  border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 0 16px;
+  transition: border-color 0.2s; margin-bottom: 16px;
+}
+.search-bar:focus-within { border-color: var(--accent); }
+.search-bar input { flex: 1; background: none; border: none; outline: none; color: var(--text-primary); font-size: 0.95rem; padding: 14px 0; }
+.search-bar input::placeholder { color: var(--text-muted); }
+.search-bar .search-icon { color: var(--text-muted); flex-shrink: 0; }
+.filter-chips { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+.chip {
+  padding: 6px 14px; border-radius: 99px; font-family: var(--font-mono); font-size: 0.74rem; font-weight: 700;
+  letter-spacing: 0.04em; text-transform: uppercase; cursor: pointer; border: 1.5px solid var(--border);
+  color: var(--text-secondary); background: transparent; transition: all 0.15s; white-space: nowrap;
+}
+.chip:hover { border-color: var(--border-light); color: var(--text-primary); }
+.chip.active { border-color: var(--accent); color: var(--accent-text); background: var(--accent-dim); }
+.empty-state { text-align: center; padding: 80px 24px; color: var(--text-muted); }
+.empty-state .empty-icon { font-size: 3rem; margin-bottom: 16px; opacity: 0.4; }
+.empty-state h3 { font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 8px; }
+
+/* ─── Modal ───────────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 200; background: rgba(6,8,13,0.88);
+  backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center;
+  padding: 24px; animation: fadeIn 0.18s ease;
+}
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+@keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+.modal-box {
+  background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius);
+  width: 100%; max-width: 540px; max-height: 90vh; overflow-y: auto;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.6); animation: slideUp 0.22s ease;
+  scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+}
+.modal-box::-webkit-scrollbar { width: 6px; }
+.modal-box::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+.modal-header { position: relative; background: var(--bg-surface-2); border-bottom: 1px solid var(--border); overflow: hidden; }
+.modal-cover { aspect-ratio: 16/7; position: relative; }
+.modal-cover .placeholder-img { width: 100%; height: 100%; }
+.modal-header-info { padding: 20px 24px; display: flex; align-items: flex-start; gap: 14px; }
+.modal-close {
+  position: absolute; top: 14px; right: 14px; z-index: 10; width: 32px; height: 32px; border-radius: 99px;
+  background: rgba(6,8,13,0.7); color: var(--text-secondary); display: flex; align-items: center; justify-content: center; transition: all 0.15s;
+}
+.modal-close:hover { background: rgba(239,68,68,0.2); color: #f87171; }
+.modal-body { padding: 24px; }
+.handoff {
+  display: flex; align-items: center; justify-content: center; gap: 16px;
+  background: var(--bg-surface-3); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 18px 24px; margin-bottom: 20px;
+}
+.handoff-brand { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 0.95rem; }
+.handoff-brand.ours { color: var(--accent-text); }
+.handoff-brand.theirs { color: var(--text-primary); }
+.handoff-connector { flex: 1; height: 1px; background: linear-gradient(90deg,var(--accent),var(--border)); max-width: 60px; }
+.modal-section-title { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px; margin-top: 20px; }
+.modal-text { font-size: 0.92rem; color: var(--text-secondary); line-height: 1.65; margin-bottom: 20px; }
+.bib-input-wrap { position: relative; margin-bottom: 24px; }
+.bib-input-wrap input {
+  width: 100%; background: var(--bg-surface-3); border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  padding: 13px 48px 13px 16px; color: var(--text-primary); font-family: var(--font-mono);
+  font-size: 1.1rem; letter-spacing: 0.1em; outline: none; transition: border-color 0.2s;
+}
+.bib-input-wrap input:focus { border-color: var(--accent); }
+.bib-input-wrap .bib-icon { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+.trust-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+.trust-badge {
+  display: flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted);
+  background: var(--bg-surface-3); border: 1px solid var(--border); border-radius: var(--radius-xs); padding: 6px 10px;
+}
+.trust-badge svg { color: var(--accent); }
+.modal-footer { padding: 20px 24px; border-top: 1px solid var(--border); background: var(--bg-surface-2); }
+.modal-footer .btn { width: 100%; justify-content: center; }
+.btn-spinner { display: flex; align-items: center; gap: 10px; }
+.spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
+@keyframes spin { to{transform:rotate(360deg)} }
+.notify-form { display: flex; flex-direction: column; gap: 12px; }
+.notify-form input { width: 100%; background: var(--bg-surface-3); border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 13px 16px; color: var(--text-primary); font-size: 0.95rem; outline: none; transition: border-color 0.2s; }
+.notify-form input:focus { border-color: var(--accent); }
+.success-state { text-align: center; padding: 32px 24px; }
+.success-state .success-icon { width: 64px; height: 64px; border-radius: 50%; background: rgba(34,197,94,0.15); border: 2px solid rgba(34,197,94,0.3); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; color: #86efac; }
+.success-state h3 { font-size: 1.1rem; margin-bottom: 8px; }
+.success-state p { color: var(--text-secondary); font-size: 0.9rem; }
+
+/* ─── Portfolio ──────────────────────────────────────────────── */
+.portfolio-header { padding: calc(var(--nav-h) + 48px) 0 32px; }
+.portfolio-header h1 { font-size: clamp(2rem,4vw,3.2rem); letter-spacing: -0.04em; margin-bottom: 8px; }
+.masonry-grid { columns: 3 260px; column-gap: 16px; }
+.masonry-item { break-inside: avoid; margin-bottom: 16px; border-radius: var(--radius-sm); overflow: hidden; cursor: pointer; position: relative; transition: transform 0.2s,box-shadow 0.2s; }
+.masonry-item:hover { transform: scale(1.015); box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+.masonry-item .placeholder-img { width: 100%; }
+.masonry-item .item-overlay { position: absolute; inset: 0; background: linear-gradient(to top,rgba(6,8,13,0.85) 0%,transparent 50%); opacity: 0; transition: opacity 0.2s; display: flex; align-items: flex-end; padding: 16px; }
+.masonry-item:hover .item-overlay { opacity: 1; }
+.item-overlay-content { display: flex; flex-direction: column; gap: 4px; }
+.item-overlay-content .item-title { font-size: 0.9rem; font-weight: 700; line-height: 1.3; }
+.item-overlay-content .item-sport { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); }
+
+/* Botão de edição no hover do portfólio */
+.item-edit-btn {
+  position: absolute; top: 8px; right: 8px; z-index: 10;
+  width: 30px; height: 30px; border-radius: 7px;
+  background: rgba(6,8,13,0.75); color: var(--text-secondary);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.78rem; opacity: 0; transition: opacity 0.2s, background 0.15s;
+  border: 1px solid var(--border-light);
+}
+.masonry-item:hover .item-edit-btn { opacity: 1; }
+.item-edit-btn:hover { background: var(--accent-dim); color: var(--accent-text); }
+.masonry-item:hover .item-delete-btn { opacity: 1 !important; }
+
+/* Lightbox */
+.lightbox { position: fixed; inset: 0; z-index: 300; background: rgba(6,8,13,0.97); display: flex; align-items: center; justify-content: center; animation: fadeIn 0.15s ease; }
+.lightbox-img { max-width: 90vw; max-height: 85vh; border-radius: var(--radius-sm); overflow: hidden; }
+.lightbox-img .placeholder-img { width: 100%; height: 100%; min-width: 560px; max-width: 860px; }
+.lightbox-close { position: fixed; top: 20px; right: 24px; width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.08); color: var(--text-primary); display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.lightbox-close:hover { background: rgba(239,68,68,0.2); color: #f87171; }
+.lightbox-nav { position: fixed; top: 50%; transform: translateY(-50%); width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.08); color: var(--text-primary); display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.lightbox-nav:hover { background: rgba(255,255,255,0.15); }
+.lightbox-nav.prev { left: 20px; }
+.lightbox-nav.next { right: 20px; }
+.lightbox-info { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: rgba(6,8,13,0.8); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 20px; display: flex; align-items: center; gap: 12px; font-size: 0.85rem; color: var(--text-secondary); white-space: nowrap; }
+.lightbox-info .lb-title { color: var(--text-primary); font-weight: 600; }
+.lightbox-counter { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); }
+
+/* ─── About ──────────────────────────────────────────────────── */
+.about-header { padding: calc(var(--nav-h) + 48px) 0 32px; }
+.about-hero { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; padding-bottom: 64px; }
+.about-photo { border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); }
+.about-content h1 { font-size: clamp(1.8rem,3.5vw,3rem); letter-spacing: -0.04em; margin-bottom: 20px; }
+.about-content p { color: var(--text-secondary); line-height: 1.75; margin-bottom: 16px; }
+.values-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; margin-top: 32px; }
+.value-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 20px; transition: border-color 0.2s; }
+.value-card:hover { border-color: var(--border-light); }
+.value-card .value-icon { width: 38px; height: 38px; border-radius: 10px; background: var(--accent-dim); border: 1px solid rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; color: var(--accent); margin-bottom: 12px; }
+.value-card h4 { font-size: 0.95rem; margin-bottom: 4px; }
+.value-card p { font-size: 0.85rem; color: var(--text-secondary); }
+
+/* ─── Hire/Contato ───────────────────────────────────────────── */
+.hire-header { padding: calc(var(--nav-h) + 48px) 0 32px; }
+.hire-header h1 { font-size: clamp(2rem,4vw,3.2rem); letter-spacing: -0.04em; margin-bottom: 8px; }
+.hire-layout { display: grid; grid-template-columns: 360px 1fr; gap: 48px; align-items: start; }
+.hire-sidebar { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; position: sticky; top: calc(var(--nav-h) + 24px); }
+.hire-sidebar h3 { font-size: 1rem; margin-bottom: 20px; }
+.contact-item { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border); }
+.contact-item:last-child { border-bottom: none; }
+.contact-item .ci-icon { width: 36px; height: 36px; border-radius: 10px; background: var(--accent-dim); border: 1px solid rgba(255,255,255,0.10); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--accent); }
+.contact-item .ci-label { font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); }
+.contact-item .ci-value { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); }
+.includes-list { list-style: none; margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
+.includes-list li { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; color: var(--text-secondary); }
+.includes-list li svg { color: var(--accent); flex-shrink: 0; }
+.hire-form { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 32px; }
+.hire-form h2 { font-size: 1.4rem; margin-bottom: 24px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.form-group label { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); }
+.form-group input, .form-group select, .form-group textarea { background: var(--bg-surface-3); border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 13px 16px; color: var(--text-primary); font-size: 0.95rem; outline: none; transition: border-color 0.2s; width: 100%; }
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent); }
+.form-group input.error, .form-group select.error, .form-group textarea.error { border-color: #ef4444; }
+.form-group select { appearance: none; cursor: pointer; }
+.form-group textarea { resize: vertical; min-height: 120px; }
+.form-group .error-msg { font-size: 0.78rem; color: #f87171; margin-top: 2px; }
+.form-note { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 20px; }
+
+/* ─── Footer ─────────────────────────────────────────────────── */
+footer { background: var(--bg-surface); border-top: 1px solid var(--border); padding: 56px 0 32px; }
+.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 40px; }
+.footer-brand p { font-size: 0.88rem; color: var(--text-secondary); line-height: 1.65; max-width: 280px; }
+.footer-partner-tag { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; margin-bottom: 12px; }
+.footer-col h4 { font-size: 0.85rem; font-weight: 700; margin-bottom: 14px; }
+.footer-links { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.footer-links li a { font-size: 0.88rem; color: var(--text-secondary); transition: color 0.15s; }
+.footer-links li a:hover { color: var(--accent-text); }
+.footer-note { font-size: 0.78rem; color: var(--text-muted); background: var(--bg-surface-2); border: 1px solid var(--border); border-radius: var(--radius-xs); padding: 10px 16px; margin-bottom: 24px; display: flex; align-items: center; gap: 8px; }
+.footer-sport-bar { display: flex; align-items: center; gap: 16px; padding: 14px 0; border-top: 1px solid var(--border); font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); flex-wrap: wrap; }
+.fsb-sep { color: var(--border-light); }
+.footer-bottom { display: flex; align-items: center; justify-content: space-between; padding-top: 16px; border-top: 1px solid var(--border); font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); flex-wrap: wrap; gap: 12px; }
+.social-links { display: flex; gap: 8px; }
+.social-link { width: 34px; height: 34px; border-radius: var(--radius-xs); background: var(--bg-surface-2); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--text-muted); transition: all 0.15s; }
+.social-link:hover { border-color: var(--border-light); color: var(--accent-text); }
+
+/* ─── Tweaks Panel ─────────────────────────────────────────────── */
+.tweaks-toggle { position: fixed; bottom: 24px; right: 24px; z-index: 150; width: 48px; height: 48px; border-radius: 50%; background: var(--bg-surface); border: 1.5px solid var(--border); color: var(--text-secondary); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(0,0,0,0.4); transition: all 0.2s; }
+.tweaks-toggle:hover, .tweaks-toggle.open { border-color: var(--accent); color: var(--accent); }
+.tweaks-panel { position: fixed; bottom: 84px; right: 24px; z-index: 150; width: 280px; background: var(--bg-surface); border: 1.5px solid var(--border-light); border-radius: var(--radius); padding: 20px; box-shadow: 0 16px 48px rgba(0,0,0,0.5); animation: slideUp 0.2s ease; }
+.tweaks-panel h4 { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 16px; }
+.tweaks-group { margin-bottom: 16px; }
+.tweaks-label { font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 8px; font-weight: 600; }
+.color-swatches { display: flex; gap: 8px; flex-wrap: wrap; }
+.color-swatch { width: 28px; height: 28px; border-radius: 8px; cursor: pointer; border: 2px solid transparent; transition: all 0.15s; flex-shrink: 0; }
+.color-swatch.active { border-color: #fff; transform: scale(1.15); }
+.font-options { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+.font-option { padding: 6px 8px; border-radius: 6px; font-size: 0.78rem; background: var(--bg-surface-3); border: 1.5px solid var(--border); color: var(--text-secondary); cursor: pointer; text-align: center; transition: all 0.15s; }
+.font-option.active { border-color: var(--accent); color: var(--accent-text); background: var(--accent-dim); }
+.toggle-options { display: flex; gap: 6px; }
+.toggle-opt { flex: 1; padding: 7px 10px; border-radius: 6px; font-size: 0.78rem; background: var(--bg-surface-3); border: 1.5px solid var(--border); color: var(--text-secondary); cursor: pointer; text-align: center; transition: all 0.15s; }
+.toggle-opt.active { border-color: var(--accent); color: var(--accent-text); background: var(--accent-dim); }
+.radius-slider { -webkit-appearance: none; appearance: none; width: 100%; height: 4px; border-radius: 2px; background: var(--bg-surface-3); outline: none; cursor: pointer; }
+.radius-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--accent); cursor: pointer; }
+
+/* ─── Animations ────────────────────────────────────────────── */
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.anim-title {
+  animation: fadeSlideUp 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.anim-subtitle {
+  animation: fadeSlideUp 0.65s 0.12s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.anim-label {
+  animation: fadeSlideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ─── Social Buttons (WA / IG) ───────────────────────────────── */
+.social-btn {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 20px; border-radius: 12px;
+  font-weight: 700; font-size: 0.95rem; text-decoration: none;
+  transition: background 0.2s, color 0.2s; font-family: inherit;
+}
+.social-btn-wa {
+  background: #1a3d2b; border: 1px solid #25d366; color: #25d366;
+}
+.social-btn-wa:hover { background: #25d366; color: #fff; }
+.social-btn-ig {
+  background: rgba(225,48,108,0.12); border: 1px solid #e1306c; color: #e1306c;
+}
+.social-btn-ig:hover { background: #e1306c; color: #fff; }
+
+/* ─── Materials CTA ──────────────────────────────────────────── */
+.materials-cta { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 32px 40px; }
+.materials-cta .section-label { margin-bottom: 8px; }
+.materials-pills { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
+.material-pill {
+  padding: 10px 22px; border: 1.5px solid var(--accent); color: var(--accent-text);
+  font-weight: 700; font-size: 1rem; border-radius: 99px;
+  background: var(--accent-dim); white-space: nowrap;
+}
+
+/* ─── Hero Cover Controls ────────────────────────────────────── */
+@keyframes kenburnsOut {
+  0%   { transform: scale(1.15); }
+  100% { transform: scale(1.0);  }
+}
+.hero-cover-img {
+  position: absolute; inset: 0; z-index: 0;
+  width: 100%; height: 100%; object-fit: cover; opacity: 0.40;
+  transform-origin: center center;
+  animation: kenburnsOut 20s ease-in-out infinite alternate;
+  will-change: transform;
+}
+.hero-cover-panel {
+  position: absolute; bottom: 16px; left: 16px; z-index: 10;
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 16px; width: 220px;
+  display: flex; flex-direction: column; gap: 10px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+.hero-cover-panel label {
+  font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 4px;
+}
+.hero-cover-panel input[type=range] {
+  width: 100%; height: 4px; -webkit-appearance: none; appearance: none;
+  background: var(--bg-surface-3); border-radius: 2px; cursor: pointer;
+}
+.hero-cover-panel input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 14px; height: 14px;
+  border-radius: 50%; background: var(--accent); cursor: pointer;
+}
+.hero-cover-panel-row { display: flex; gap: 6px; }
+.hero-cover-add-btn {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 8px; border-radius: var(--radius-xs); background: var(--accent-dim);
+  border: 1.5px solid rgba(255,255,255,0.15); color: var(--accent-text);
+  font-family: var(--font-mono); font-size: 0.7rem; cursor: pointer; width: 100%;
+  transition: all 0.15s;
+}
+.hero-cover-add-btn:hover { background: var(--accent); color: #fff; }
+
+/* ─── CropableImage ──────────────────────────────────────────── */
+.cropable-hover-overlay {
+  position: absolute; inset: 0; z-index: 8;
+  display: flex; align-items: flex-end; justify-content: center;
+  gap: 6px; padding: 10px;
+  background: linear-gradient(to top, rgba(6,8,13,0.82) 0%, transparent 60%);
+  opacity: 0; transition: opacity 0.2s;
+}
+.cropable-wrap:hover .cropable-hover-overlay { opacity: 1; }
+.cropable-action-btn {
+  padding: 6px 10px; border-radius: 6px; font-size: 0.68rem;
+  font-family: var(--font-mono); cursor: pointer;
+  background: rgba(14,19,32,0.9); border: 1px solid var(--border-light);
+  color: var(--text-secondary); transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+.cropable-action-btn:hover { background: var(--accent-dim); color: var(--accent-text); border-color: var(--accent); }
+.cropable-action-remove:hover { background: rgba(239,68,68,0.15) !important; color: #f87171 !important; border-color: rgba(239,68,68,0.5) !important; }
+.cropable-wrap { position: relative; overflow: hidden; width: 100%; }
+.cropable-wrap .crop-edit-btn {
+  position: absolute; top: 8px; right: 8px; z-index: 10;
+  width: 28px; height: 28px; border-radius: 7px;
+  background: rgba(6,8,13,0.75); border: 1px solid var(--border-light);
+  color: var(--text-secondary); display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.2s, background 0.15s; cursor: pointer;
+}
+.cropable-wrap:hover .crop-edit-btn { opacity: 1; }
+.cropable-wrap .crop-edit-btn:hover { background: var(--accent-dim); color: var(--accent-text); }
+.crop-panel {
+  position: absolute; bottom: 0; left: 0; right: 0; z-index: 20;
+  background: rgba(6,8,13,0.88); backdrop-filter: blur(8px);
+  padding: 12px 14px; display: flex; flex-direction: column; gap: 8px;
+}
+.crop-panel label {
+  font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 3px;
+}
+.crop-panel input[type=range] {
+  width: 100%; height: 3px; -webkit-appearance: none; appearance: none;
+  background: var(--border-light); border-radius: 2px; cursor: pointer;
+}
+.crop-panel input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 13px; height: 13px;
+  border-radius: 50%; background: var(--accent); cursor: pointer;
+}
+.crop-panel-actions { display: flex; gap: 6px; margin-top: 4px; }
+.crop-panel-actions button {
+  flex: 1; padding: 6px; border-radius: 6px; font-family: var(--font-mono);
+  font-size: 0.7rem; background: var(--bg-surface-3); border: 1px solid var(--border);
+  color: var(--text-secondary); cursor: pointer; transition: all 0.15s;
+}
+.crop-panel-actions button:hover { border-color: var(--border-light); color: var(--text-primary); }
+.crop-panel-actions .crop-remove-btn:hover { border-color: #ef4444; color: #f87171; }
+.cropable-upload-overlay {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 8px;
+  background: transparent; cursor: pointer; z-index: 5; opacity: 0;
+  transition: opacity 0.2s;
+}
+.cropable-wrap:hover .cropable-upload-overlay { opacity: 1; }
+.cropable-upload-overlay span {
+  font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--accent-text); background: rgba(6,8,13,0.7);
+  padding: 4px 10px; border-radius: 99px;
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 4px; }
+
+/* ─── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+  .about-hero { grid-template-columns: 1fr; gap: 32px; }
+  .about-photo { max-width: 360px; }
+  .hire-layout { grid-template-columns: 1fr; }
+  .hire-sidebar { position: static; }
+}
+@media (max-width: 900px) {
+  .hero-left-col { padding: 48px 0; }
+}
+@media (max-width: 768px) {
+  :root { --section-gap: 64px; }
+  .nav-links, .nav-cta { display: none; }
+  .nav-hamburger { display: flex; }
+  .events-grid, .form-row { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 2.4rem; }
+  .hero-stats { flex-direction: column; }
+  .hero-stat { border-right: none; border-bottom: 1px solid var(--border); }
+  .hero-stat:last-child { border-bottom: none; }
+  .cta-strip { flex-direction: column; text-align: center; padding: 28px 24px; }
+  .masonry-grid { columns: 2 180px; }
+  .footer-grid { grid-template-columns: 1fr; gap: 24px; }
+  .values-grid { grid-template-columns: 1fr; }
+  .lightbox-img .placeholder-img { min-width: unset; width: 90vw; }
+  .lightbox-nav { display: none; }
+  .tweaks-panel { right: 12px; left: 12px; width: auto; }
+  .handoff { flex-direction: column; gap: 8px; }
+  .handoff-connector { display: none; }
+  .photo-gallery-grid { grid-template-columns: repeat(2,1fr); }
+  /* Hero mobile */
+  .hero-scoreboard { display: none; }
+  .hero-left-col { padding: 32px 0; }
+  /* Event detail info mobile */
+  .event-detail-info { flex-direction: column !important; align-items: flex-start !important; }
+  .event-detail-cta { width: 100%; }
+  .event-detail-cta a { width: 100%; justify-content: center; box-sizing: border-box; }
+}
+@media (max-width: 480px) {
+  .masonry-grid { columns: 1; }
+  .hero-actions { flex-direction: column; }
+  .hero-actions .btn { width: 100%; justify-content: center; }
+  .photo-gallery-grid { grid-template-columns: repeat(2,1fr); }
+}
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7/babel.min.js"></script>
+
+  <script type="text/babel">
+// ════════════════════════════════════════════════════════════════
+// DATA
+// ════════════════════════════════════════════════════════════════
+window.SPORT_COLORS = {
+  'Corrida':'#3b82f6','Kart':'#ef4444','MTB':'#22c55e','Futebol':'#84cc16',
+  'CrossFit':'#f97316','Natação':'#06b6d4','Vôlei de Praia':'#eab308',
+  'MMA':'#a855f7','Triathlon':'#14b8a6','Ciclismo':'#f43f5e',
+};
+window.SPORT_EMOJI = {
+  'Corrida':'🏃','Kart':'🏎️','MTB':'🚵','Futebol':'⚽','CrossFit':'🏋️',
+  'Natação':'🏊','Vôlei de Praia':'🏐','MMA':'🥊','Triathlon':'🏊','Ciclismo':'🚴',
+};
+window.EVENTS    = [];
+window.PORTFOLIO = [];
+window.SIZE_RATIO = { tall:'2/3', wide:'16/9', normal:'4/3' };
+
+// ── Supabase ──────────────────────────────────────────────────
+const SUPA_URL = 'https://nuiexyevmluekobajqba.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51aWV4eWV2bWx1ZWtvYmFqcWJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwNjU0MDksImV4cCI6MjA5NjY0MTQwOX0.t1eI43vHsd-4qxIbzqHq1FIdw4YC10SuSkYk4qD6fCE';
+const sb = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+
+// Upload de imagem para o Supabase Storage
+async function uploadImage(file) {
+  const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+  const name = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const { error } = await sb.storage.from('photos').upload(name, file, { upsert: false });
+  if (error) throw error;
+  return sb.storage.from('photos').getPublicUrl(name).data.publicUrl;
+}
+
+// ════════════════════════════════════════════════════════════════
+// COMPONENTS
+// ════════════════════════════════════════════════════════════════
+const { useState, useEffect, useMemo, useContext, createContext, useRef } = React;
+
+// ── Admin Context ─────────────────────────────────────────────
+const AdminCtx = createContext({ isAdmin: false, openLogin: () => {} });
+const useAdmin = () => useContext(AdminCtx);
+
+
+// ── Icons ──
+const Icons = {
+  Camera: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>,
+  Calendar: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>,
+  Pin: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>,
+  Search: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>,
+  ExternalLink: () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>,
+  ArrowRight: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>,
+  Bell: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>,
+  Shield: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
+  Zap: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>,
+  Check: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>,
+  X: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
+  Menu: () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>,
+  ChevronLeft: () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>,
+  ChevronRight: () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>,
+  Image: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>,
+  Download: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>,
+  Upload: () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>,
+  Edit: () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>,
+  Settings: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>,
+  WhatsApp: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.133.558 4.133 1.535 5.866L.054 23.707a.5.5 0 00.606.658l5.882-1.478A11.944 11.944 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22a9.944 9.944 0 01-5.13-1.424l-.36-.217-3.745.941.972-3.659-.239-.379A9.956 9.956 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>,
+  Instagram: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>,
+  Mail: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>,
+  Plus: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
+};
+
+// ── Placeholder Image ──
+function PlaceholderImage({ sport, label, aspectRatio }) {
+  const color = SPORT_COLORS[sport] || '#3b82f6';
+  return (
+    <div className="placeholder-img" style={{ '--sport-color': color, aspectRatio: aspectRatio || '16/9' }}>
+      <div className="ph-gradient" />
+      <div className="ph-content">
+        <div className="ph-icon">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/>
+          </svg>
+        </div>
+        <span className="ph-label">{label || sport}</span>
+      </div>
+    </div>
+  );
+}
+
+// ── PhotoEditorModal ──
+// IMPORTANTE: PreviewBox e ControlsBox são JSX inline (não sub-componentes)
+// para evitar desmontagem/remontagem a cada re-render que causava piscamento.
+function PhotoEditorModal({ src, aspectRatio, initialPosX, initialPosY, initialScale, onConfirm, onCancel }) {
+  const [posX, setPosX]   = useState(initialPosX ?? 50);
+  const [posY, setPosY]   = useState(initialPosY ?? 50);
+  const [scale, setScale] = useState(initialScale ?? 1);
+  const [showFull, setShowFull] = useState(false);
+  const drag = React.useRef({ active: false, lastX: 0, lastY: 0 });
+
+  const startDrag = (x, y) => { drag.current = { active: true, lastX: x, lastY: y }; };
+  const moveDrag  = (x, y) => {
+    if (!drag.current.active) return;
+    const dx = x - drag.current.lastX;
+    const dy = y - drag.current.lastY;
+    drag.current.lastX = x; drag.current.lastY = y;
+    setPosX(p => Math.min(100, Math.max(0, p - dx * 0.3)));
+    setPosY(p => Math.min(100, Math.max(0, p - dy * 0.3)));
+  };
+  const stopDrag = () => { drag.current.active = false; };
+
+  const [wN, hN]  = (aspectRatio || '4/3').split('/').map(Number);
+  const sideLayout = (wN / hN) < 1; // retrato → lado a lado; paisagem → empilhado
+
+  const modalContent = (
+    <div
+      style={{position:'fixed',inset:0,zIndex:9000,background:'rgba(6,8,13,0.97)',
+        display:'flex',alignItems:'center',justifyContent:'center',padding:24}}
+      onClick={e=>e.stopPropagation()}
+    >
+      <div
+        style={{
+          background:'var(--bg-surface)',borderRadius:'var(--radius)',
+          border:'1px solid var(--border-light)',
+          padding:20, gap:20,
+          display:'flex',
+          flexDirection: sideLayout ? 'row' : 'column',
+          alignItems: sideLayout ? 'flex-start' : 'stretch',
+          maxWidth: sideLayout ? 860 : 620,
+          width:'100%', maxHeight:'95vh', overflow:'auto',
+        }}
+        onClick={e=>e.stopPropagation()}
+      >
+
+        {/* ── Preview na proporção exata do slot ── */}
+        <div
+          style={{
+            position:'relative', overflow:'hidden', flexShrink:0,
+            aspectRatio: aspectRatio || '4/3',
+            cursor:'grab', userSelect:'none',
+            borderRadius:'var(--radius-sm)',
+            border:'2px solid var(--accent)',
+            background:'#000',
+            ...(sideLayout
+              ? { height:'min(68vh, 500px)', width:'auto' }
+              : { width:'100%', maxHeight:'50vh' }),
+          }}
+          onMouseDown={e=>{e.preventDefault();e.stopPropagation();startDrag(e.clientX,e.clientY);}}
+          onMouseMove={e=>{e.stopPropagation();moveDrag(e.clientX,e.clientY);}}
+          onMouseUp={e=>{e.stopPropagation();stopDrag();}}
+          onMouseLeave={e=>{e.stopPropagation();stopDrag();}}
+          onTouchStart={e=>{e.stopPropagation();startDrag(e.touches[0].clientX,e.touches[0].clientY);}}
+          onTouchMove={e=>{e.stopPropagation();e.preventDefault();moveDrag(e.touches[0].clientX,e.touches[0].clientY);}}
+          onTouchEnd={e=>{e.stopPropagation();stopDrag();}}
+        >
+          <img src={src} draggable={false} style={{
+            position:'absolute',top:0,left:0,
+            width:'100%',height:'100%',
+            objectFit: showFull ? 'contain' : 'cover',
+            transform:`scale(${scale}) translate(${(50-posX)*0.5}%,${(50-posY)*0.5}%)`,
+            transformOrigin:'center center',
+            pointerEvents:'none',userSelect:'none',
+          }} />
+          {/* Grade de terços */}
+          <div style={{position:'absolute',inset:0,pointerEvents:'none',zIndex:1,
+            backgroundImage:'linear-gradient(rgba(255,255,255,0.07) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.07) 1px,transparent 1px)',
+            backgroundSize:'33.33% 33.33%'}} />
+          <div style={{position:'absolute',bottom:8,left:'50%',transform:'translateX(-50%)',
+            fontFamily:'var(--font-mono)',fontSize:'0.56rem',color:'rgba(255,255,255,0.5)',
+            background:'rgba(0,0,0,0.65)',padding:'3px 10px',borderRadius:20,
+            pointerEvents:'none',zIndex:2,whiteSpace:'nowrap'}}>
+            ✥ Arraste para mover
+          </div>
+        </div>
+
+        {/* ── Controles ── */}
+        <div style={{display:'flex',flexDirection:'column',gap:14,justifyContent:'center',
+          ...(sideLayout ? {flex:1,minWidth:220} : {})}}>
+
+          <div>
+            <div style={{fontWeight:700,fontSize:'0.95rem',color:'var(--text-primary)',marginBottom:2}}>Posicionar foto</div>
+            <div style={{fontFamily:'var(--font-mono)',fontSize:'0.6rem',color:'var(--text-muted)'}}>
+              Arraste o preview · ou use os controles
+            </div>
+          </div>
+
+          <div style={{display:'flex',flexDirection:'column',gap:10}}>
+            {[
+              {icon:'🔍',label:'Zoom',       val:scale,set:setScale,min:1,  max:4,  step:0.05,fmt:v=>`${v.toFixed(2)}x`},
+              {icon:'↔', label:'Horizontal', val:posX, set:setPosX, min:0,  max:100,step:1,   fmt:v=>`${v}%`},
+              {icon:'↕', label:'Vertical',   val:posY, set:setPosY, min:0,  max:100,step:1,   fmt:v=>`${v}%`},
+            ].map(s => (
+              <div key={s.label} style={{display:'flex',alignItems:'center',gap:10}}>
+                <span style={{fontSize:'1rem',minWidth:20}}>{s.icon}</span>
+                <span style={{fontFamily:'var(--font-mono)',fontSize:'0.65rem',color:'var(--text-muted)',minWidth:76}}>{s.label}</span>
+                <input type="range" min={s.min} max={s.max} step={s.step} value={s.val}
+                  style={{flex:1}}
+                  onMouseDown={e=>e.stopPropagation()} onTouchStart={e=>e.stopPropagation()}
+                  onChange={e=>s.set(Number(e.target.value))} />
+                <span style={{fontFamily:'var(--font-mono)',fontSize:'0.68rem',color:'var(--accent-text)',minWidth:40,textAlign:'right'}}>{s.fmt(s.val)}</span>
+              </div>
+            ))}
+          </div>
+
+          <div style={{display:'flex',flexDirection:'column',gap:8,marginTop:4}}>
+            <button
+              style={{width:'100%',padding:'9px',borderRadius:'var(--radius-sm)',
+                background: showFull ? 'rgba(255,255,255,0.12)' : 'var(--bg-surface-3)',
+                border:'1px solid var(--border-light)',
+                color:'var(--text-secondary)',fontFamily:'var(--font-mono)',fontSize:'0.72rem',cursor:'pointer'}}
+              onClick={e=>{e.stopPropagation();setShowFull(v=>!v);}}
+            >{showFull ? '🔲 Ver enquadrado' : '🖼 Ver foto completa'}</button>
+            <button
+              style={{width:'100%',padding:'11px',borderRadius:'var(--radius-sm)',
+                background:'rgba(255,255,255,0.08)',border:'1px solid var(--accent)',
+                color:'var(--accent-text)',fontFamily:'var(--font-mono)',fontSize:'0.78rem',
+                cursor:'pointer',fontWeight:700}}
+              onClick={e=>{e.stopPropagation();onConfirm(posX,posY,scale);}}
+            >✓ Confirmar posição</button>
+            <button
+              style={{width:'100%',padding:'9px',borderRadius:'var(--radius-sm)',
+                background:'var(--bg-surface-3)',border:'1px solid var(--border)',
+                color:'var(--text-secondary)',fontFamily:'var(--font-mono)',fontSize:'0.72rem',cursor:'pointer'}}
+              onClick={e=>{e.stopPropagation();onCancel();}}
+            >Cancelar</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+  // Portal: renderiza diretamente no body, fora de qualquer hierarquia React
+  return ReactDOM.createPortal(modalContent, document.body);
+}
+
+// ── CropableImage ──
+// ── Admin Login Modal ─────────────────────────────────────────
+function AdminLoginModal({ onClose, onSuccess }) {
+  const [email, setEmail] = useState('');
+  const [pwd, setPwd]     = useState('');
+  const [err, setErr]     = useState('');
+  const [loading, setLoading] = useState(false);
+  const inputRef = useRef();
+
+  useEffect(() => {
+    const onKey = e => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', onKey);
+    setTimeout(() => inputRef.current && inputRef.current.focus(), 80);
+    return () => document.removeEventListener('keydown', onKey);
+  }, []);
+
+  const handleLogin = async () => {
+    if (!email || !pwd) { setErr('Preencha e-mail e senha.'); return; }
+    setLoading(true); setErr('');
+    const { error } = await sb.auth.signInWithPassword({ email, password: pwd });
+    if (error) { setErr('E-mail ou senha incorretos.'); setLoading(false); return; }
+    onSuccess();
+    setLoading(false);
+  };
+
+  const handleKey = e => { if (e.key === 'Enter') handleLogin(); };
+
+  return ReactDOM.createPortal(
+    <div style={{
+      position:'fixed',inset:0,zIndex:9999,background:'rgba(0,0,0,0.88)',
+      backdropFilter:'blur(8px)',display:'flex',alignItems:'center',justifyContent:'center',padding:24
+    }} onClick={onClose}>
+      <div style={{
+        background:'#111',border:'1px solid #333',borderRadius:16,
+        width:'100%',maxWidth:380,padding:'36px 32px',boxShadow:'0 32px 80px rgba(0,0,0,0.7)'
+      }} onClick={e=>e.stopPropagation()}>
+        {/* Cabeçalho */}
+        <div style={{textAlign:'center',marginBottom:28}}>
+          <div style={{
+            width:52,height:52,borderRadius:12,background:'#1a1a1a',border:'1px solid #333',
+            display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 16px',fontSize:22
+          }}>🔐</div>
+          <div style={{fontFamily:'var(--font-condensed)',fontStyle:'italic',fontWeight:900,fontSize:'1.6rem',letterSpacing:'.02em',textTransform:'uppercase',color:'#f0f0f0'}}>
+            Área Admin
+          </div>
+          <div style={{fontSize:'.8rem',color:'#555',marginTop:6}}>
+            DM Foto — acesso restrito
+          </div>
+        </div>
+
+        {/* Campos */}
+        <div style={{display:'flex',flexDirection:'column',gap:12}}>
+          <input
+            ref={inputRef}
+            type="email"
+            placeholder="E-mail"
+            value={email}
+            onChange={e=>{setEmail(e.target.value);setErr('');}}
+            onKeyDown={handleKey}
+            style={{
+              background:'#181818',border:'1.5px solid #2a2a2a',borderRadius:8,
+              padding:'13px 16px',color:'#f0f0f0',fontSize:'.95rem',outline:'none',
+              transition:'border-color .2s',fontFamily:'inherit',width:'100%'
+            }}
+            onFocus={e=>e.target.style.borderColor='#555'}
+            onBlur={e=>e.target.style.borderColor='#2a2a2a'}
+          />
+          <input
+              type="password"
+              placeholder="Senha"
+              value={pwd}
+              onChange={e=>{setPwd(e.target.value);setErr('');}}
+              onKeyDown={handleKey}
+              style={{
+                background:'#181818',border:'1.5px solid #2a2a2a',borderRadius:8,
+                padding:'13px 16px',color:'#f0f0f0',fontSize:'.95rem',outline:'none',
+                fontFamily:'inherit',width:'100%'
+              }}
+              onFocus={e=>e.target.style.borderColor='#555'}
+              onBlur={e=>e.target.style.borderColor='#2a2a2a'}
+            />
+          {err && <div style={{fontSize:'.8rem',color:'#f87171',paddingLeft:2}}>{err}</div>}
+          <button
+            onClick={handleLogin}
+            disabled={loading}
+            style={{
+              background:'#fff',color:'#080808',border:'none',borderRadius:8,
+              padding:'13px',fontWeight:800,fontSize:'.88rem',letterSpacing:'.06em',
+              textTransform:'uppercase',cursor:'pointer',marginTop:4,
+              opacity:loading?.6:1,transition:'opacity .2s'
+            }}
+          >{loading ? '...' : 'Entrar'}</button>
+        </div>
+
+        {/* Rodapé */}
+        <div style={{marginTop:20,textAlign:'center'}}>
+          <button
+            onClick={onClose}
+            style={{fontSize:'.75rem',color:'#333',background:'none',border:'none',cursor:'pointer'}}
+          >Cancelar</button>
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+}
+
+function CropableImage({ sport, label, aspectRatio, externalInputRef,
+    initialSrc, initialPosX, initialPosY, initialScale, onSave }) {
+  const { isAdmin } = useAdmin();
+  const [src, setSrc]       = useState(initialSrc || null);
+  const [posX, setPosX]     = useState(initialPosX ?? 50);
+  const [posY, setPosY]     = useState(initialPosY ?? 50);
+  const [scale, setScale]   = useState(initialScale ?? 1);
+  const [editing, setEditing]       = useState(false);
+  const [pendingSrc, setPendingSrc]  = useState(null);
+  const [pendingFile, setPendingFile] = useState(null);
+  const [uploading, setUploading]    = useState(false);
+  const inputRef  = useRef();
+  const drag = useRef({ active: false, lastX: 0, lastY: 0 });
+
+  // Sync initial props if they change externally
+  useEffect(() => { setSrc(initialSrc || null); }, [initialSrc]);
+  useEffect(() => { setPosX(initialPosX ?? 50); }, [initialPosX]);
+  useEffect(() => { setPosY(initialPosY ?? 50); }, [initialPosY]);
+  useEffect(() => { setScale(initialScale ?? 1); }, [initialScale]);
+
+  useEffect(() => {
+    if (externalInputRef) externalInputRef.current = inputRef.current;
+  }, [externalInputRef]);
+
+  const handleFile = e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setPendingFile(file);
+    const reader = new FileReader();
+    reader.onload = ev => { setPendingSrc(ev.target.result); };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  };
+
+  const handleConfirm = async (px, py, sc) => {
+    if (pendingFile) {
+      // New file — upload to Supabase Storage
+      setUploading(true);
+      try {
+        const url = await uploadImage(pendingFile);
+        setSrc(url); setPosX(px); setPosY(py); setScale(sc);
+        setPendingSrc(null); setPendingFile(null);
+        if (onSave) onSave(url, px, py, sc);
+      } catch(err) {
+        alert('Erro no upload: ' + err.message);
+      } finally {
+        setUploading(false);
+      }
+    } else {
+      // Re-adjust existing image
+      setSrc(pendingSrc); setPosX(px); setPosY(py); setScale(sc);
+      setPendingSrc(null);
+      if (onSave) onSave(pendingSrc || src, px, py, sc);
+    }
+    setEditing(false);
+  };
+
+  // ── handlers de drag compartilhados entre mouse e touch ──
+  const startDrag = (x, y) => {
+    drag.current.active = true;
+    drag.current.lastX = x;
+    drag.current.lastY = y;
+  };
+  const moveDrag = (x, y) => {
+    if (!drag.current.active) return;
+    const dx = x - drag.current.lastX;
+    const dy = y - drag.current.lastY;
+    drag.current.lastX = x;
+    drag.current.lastY = y;
+    setPosX(prev => Math.min(100, Math.max(0, prev - dx * 0.25)));
+    setPosY(prev => Math.min(100, Math.max(0, prev - dy * 0.25)));
+  };
+  const stopDrag = () => { drag.current.active = false; };
+
+  // Modal fullscreen de posicionamento (logo após carregar arquivo)
+  // Renderiza o placeholder + o modal por cima (position:fixed) — evita estrutura vazia no DOM
+  if (pendingSrc) {
+    return (
+      <div style={{width:'100%',aspectRatio:aspectRatio||'4/3',position:'relative'}} onClick={e=>e.stopPropagation()}>
+        <PlaceholderImage sport={sport} label={label} aspectRatio={aspectRatio} />
+        <PhotoEditorModal
+          src={pendingSrc}
+          aspectRatio={aspectRatio}
+          initialPosX={pendingFile ? 50 : posX}
+          initialPosY={pendingFile ? 50 : posY}
+          initialScale={pendingFile ? 1  : scale}
+          onConfirm={handleConfirm}
+          onCancel={() => { setPendingSrc(null); setPendingFile(null); }}
+        />
+        <input ref={inputRef} type="file" accept="image/*" style={{display:'none'}}
+          onClick={e=>e.stopPropagation()} onChange={handleFile} />
+      </div>
+    );
+  }
+
+  // No src → placeholder (admin: mostra overlay de upload)
+  if (!src) {
+    return (
+      <div
+        className="cropable-wrap"
+        style={{aspectRatio: aspectRatio || '4/3'}}
+        onClick={e => e.stopPropagation()}
+      >
+        <PlaceholderImage sport={sport} label={label} aspectRatio={aspectRatio} />
+        {isAdmin && (
+          <>
+            <div className="cropable-upload-overlay"
+              onClick={e => { e.stopPropagation(); inputRef.current && inputRef.current.click(); }}>
+              <Icons.Upload />
+              <span>Adicionar foto</span>
+            </div>
+            <input ref={inputRef} type="file" accept="image/*"
+              style={{display:'none'}}
+              onClick={e => e.stopPropagation()}
+              onChange={handleFile} />
+          </>
+        )}
+      </div>
+    );
+  }
+
+  // Uploading overlay
+  if (uploading) {
+    return (
+      <div style={{width:'100%',aspectRatio:aspectRatio||'4/3',position:'relative',background:'#111',display:'flex',alignItems:'center',justifyContent:'center'}}>
+        <span style={{fontFamily:'var(--font-mono)',fontSize:'0.75rem',color:'var(--text-muted)'}}>⏳ Enviando…</span>
+      </div>
+    );
+  }
+
+  // Has src → imagem com drag + botões de hover + PhotoEditorModal (portal) para ajuste
+  // Todos os controles ficam DENTRO do cropable-wrap (position:absolute) para não serem
+  // cortados pelo overflow:hidden do masonry-item.
+  return (
+    <div
+      className="cropable-wrap"
+      style={{
+        position:'relative', overflow:'hidden',
+        width:'100%', aspectRatio: aspectRatio || '4/3',
+        cursor: isAdmin ? (drag.current.active ? 'grabbing' : 'grab') : 'pointer',
+        userSelect:'none',
+      }}
+      onClick={isAdmin ? (e=>e.stopPropagation()) : undefined}
+      onMouseDown={isAdmin ? (e=>{e.preventDefault();startDrag(e.clientX,e.clientY);}) : undefined}
+      onMouseMove={isAdmin ? (e=>moveDrag(e.clientX,e.clientY)) : undefined}
+      onMouseUp={isAdmin ? stopDrag : undefined}
+      onMouseLeave={isAdmin ? stopDrag : undefined}
+      onTouchStart={isAdmin ? (e=>{e.stopPropagation();startDrag(e.touches[0].clientX,e.touches[0].clientY);}) : undefined}
+      onTouchMove={isAdmin ? (e=>{e.stopPropagation();moveDrag(e.touches[0].clientX,e.touches[0].clientY);}) : undefined}
+      onTouchEnd={isAdmin ? (e=>{e.stopPropagation();stopDrag();}) : undefined}
+    >
+      <img src={src} draggable={false} loading="lazy" style={{
+        position:'absolute',top:0,left:0,width:'100%',height:'100%',
+        objectFit:'cover',
+        transform:`scale(${scale}) translate(${(50-posX)*0.5}%,${(50-posY)*0.5}%)`,
+        transformOrigin:'center center',
+        userSelect:'none',pointerEvents:'none',
+      }} />
+
+      {/* Overlay com botões — somente admin */}
+      {isAdmin && (
+        <>
+          <div className="cropable-hover-overlay" onClick={e=>e.stopPropagation()}>
+            <button className="cropable-action-btn" onClick={e=>{e.stopPropagation();setPendingSrc(src);}} title="Ajustar">✏️ Ajustar</button>
+            <button className="cropable-action-btn" onClick={e=>{e.stopPropagation();inputRef.current&&inputRef.current.click();}} title="Trocar">📁 Trocar</button>
+            <button className="cropable-action-btn cropable-action-remove" onClick={e=>{e.stopPropagation();setSrc(null);setScale(1);setPosX(50);setPosY(50);if(onSave)onSave(null,50,50,1);}} title="Remover">🗑 Remover</button>
+          </div>
+          {pendingSrc && (
+            <PhotoEditorModal src={pendingSrc} aspectRatio={aspectRatio}
+              initialPosX={pendingFile ? 50 : posX}
+              initialPosY={pendingFile ? 50 : posY}
+              initialScale={pendingFile ? 1  : scale}
+              onConfirm={handleConfirm}
+              onCancel={()=>{setPendingSrc(null);setPendingFile(null);}} />
+          )}
+          <input ref={inputRef} type="file" accept="image/*"
+            style={{display:'none'}} onClick={e=>e.stopPropagation()} onChange={handleFile} />
+        </>
+      )}
+    </div>
+  );
+}
+
+// ── Status dot ──
+const Dot = () => <span style={{width:6,height:6,borderRadius:'50%',background:'currentColor',display:'inline-block'}} />;
+
+// ── Navbar ──
+function Navbar({ page, navigate }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const links = [
+    { id:'home',      label:'Início' },
+    { id:'events',    label:'Eventos' },
+    { id:'portfolio', label:'Portfólio' },
+    { id:'about',     label:'Sobre' },
+    { id:'hire',      label:'Contato' },     // ← Renomeado
+  ];
+  const go = (id) => { navigate(id); setMenuOpen(false); };
+  return (
+    <>
+      <nav className="navbar">
+        <div className="container">
+          <button className="nav-logo" onClick={() => go('home')}>
+            <span className="logo-icon"><Icons.Camera /></span>
+            DMFOTO
+          </button>
+          <div className="nav-links">
+            {links.map(l => <button key={l.id} className={`nav-link${page===l.id?' active':''}`} onClick={() => go(l.id)}>{l.label}</button>)}
+          </div>
+          <button className="btn btn-primary btn-sm nav-cta" onClick={() => go('events')}><Icons.Search /> Encontrar minhas fotos</button>
+          <button className="nav-hamburger" onClick={() => setMenuOpen(v => !v)}>{menuOpen ? <Icons.X /> : <Icons.Menu />}</button>
+        </div>
+      </nav>
+      <div className={`mobile-menu${menuOpen?' open':''}`}>
+        {links.map(l => <button key={l.id} className={`nav-link${page===l.id?' active':''}`} onClick={() => go(l.id)}>{l.label}</button>)}
+        <button className="btn btn-primary" onClick={() => go('events')}><Icons.Search /> Encontrar minhas fotos</button>
+      </div>
+    </>
+  );
+}
+
+// ── Event Card (novo design) ──
+function EventCard({ event, onNotify, onDelete, onUpdate, onOpenDetail, onOpenEdit }) {
+  const { isAdmin } = useAdmin();
+  const statusMap = {
+    available: { cls:'badge-available', label:'Fotos disponíveis' },
+    editing:   { cls:'badge-editing',   label:'Em edição' },
+    soon:      { cls:'badge-soon',      label:'Em breve' },
+  };
+  const st = statusMap[event.status] || statusMap.soon;
+  const dateStr = event.date ? new Date(event.date+'T12:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'}) : '—';
+
+  return (
+    <div className="event-card" style={{cursor:'pointer'}} onClick={() => onOpenDetail && onOpenDetail(event)}>
+      {/* Capa */}
+      <div className="event-card-cover">
+        <CropableImage
+          sport={event.sport} label={event.title} aspectRatio="16/9"
+          initialSrc={event.cover_url}
+          initialPosX={event.cover_pos_x} initialPosY={event.cover_pos_y} initialScale={event.cover_scale}
+          onSave={async (url, px, py, sc) => {
+            const { error } = await sb.from('events').update({ cover_url: url, cover_pos_x: px, cover_pos_y: py, cover_scale: sc }).eq('id', event.id);
+            if (error) { console.error('EventCard onSave error:', error); alert('Erro ao salvar capa: ' + error.message); }
+            else if (onUpdate) onUpdate({ ...event, cover_url: url, cover_pos_x: px, cover_pos_y: py, cover_scale: sc });
+          }}
+        />
+        <div className="card-tags"><span className="tag">{event.sport}</span></div>
+        <div className="card-status"><span className={`badge ${st.cls}`}><Dot />{st.label}</span></div>
+        {isAdmin && (
+          <div style={{position:'absolute',top:8,right:8,display:'flex',gap:6,zIndex:10}} onClick={e=>e.stopPropagation()}>
+            <button
+              title="Editar evento"
+              onClick={e => { e.stopPropagation(); onOpenEdit && onOpenEdit(event); }}
+              style={{width:28,height:28,borderRadius:'50%',background:'rgba(30,30,30,0.9)',color:'#fff',
+                display:'flex',alignItems:'center',justifyContent:'center',border:'1px solid #555',cursor:'pointer'}}
+            >✏️</button>
+            {onDelete && <button
+              title="Excluir evento"
+              onClick={e => { e.stopPropagation(); onDelete(event.id); }}
+              style={{width:28,height:28,borderRadius:'50%',background:'rgba(239,68,68,0.85)',color:'#fff',
+                display:'flex',alignItems:'center',justifyContent:'center',border:'none',cursor:'pointer'}}
+              onMouseEnter={e=>e.currentTarget.style.background='#ef4444'}
+              onMouseLeave={e=>e.currentTarget.style.background='rgba(239,68,68,0.85)'}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>}
+          </div>
+        )}
+      </div>
+
+      {/* Corpo — informações do evento */}
+      <div className="event-card-body">
+        <div className="event-card-title">{event.title}</div>
+        <div className="event-card-info">
+          <div className="event-card-info-row"><Icons.Calendar />{dateStr}</div>
+          <div className="event-card-info-row"><Icons.Pin />{event.location} · {event.city}</div>
+          <div className="event-card-info-row">
+            <span className="tag" style={{fontSize:'0.65rem'}}>{event.sport}</span>
+            {event.photos > 0 && <><span style={{marginLeft:6}}><Icons.Image /></span><span className="count">{event.photos.toLocaleString('pt-BR')}</span> fotos</>}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Botão de ação — sempre na base do card ── */}
+      {event.status === 'available' && event.store_url ? (
+        <button className="event-card-view-link" onClick={e=>{ e.stopPropagation(); onOpenDetail && onOpenDetail(event); }}>
+          VISUALIZE SUAS FOTOS AQUI <Icons.ExternalLink />
+        </button>
+      ) : (
+        <button className="event-card-notify-btn" onClick={e => { e.stopPropagation(); onNotify(event); }}>
+          <Icons.Bell /> Avise-me quando disponível
+        </button>
+      )}
+
+    </div>
+  );
+}
+
+// ── Notify Modal ──
+// ════════════════════════════════════════════════════════════════
+// EVENT DETAIL MODAL
+// ════════════════════════════════════════════════════════════════
+function EventDetailModal({ event, onClose, onNotify }) {
+  const [photos, setPhotos] = useState([]);
+
+  useEffect(() => {
+    const onKey = e => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    sb.from('event_photos').select('*').eq('event_id', event.id).order('position')
+      .then(({ data }) => { if (data) setPhotos(data); });
+    return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = ''; };
+  }, []);
+
+  const statusMap = {
+    available: { cls:'badge-available', label:'Fotos disponíveis' },
+    editing:   { cls:'badge-editing',   label:'Em edição' },
+    soon:      { cls:'badge-soon',      label:'Em breve' },
+  };
+  const st = statusMap[event.status] || statusMap.soon;
+  const dateStr = event.date ? new Date(event.date+'T12:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'}) : '—';
+
+  const coverStyle = event.cover_url ? {
+    backgroundImage: `url(${event.cover_url})`,
+    backgroundSize: 'cover',
+    backgroundPosition: `${event.cover_pos_x??50}% ${event.cover_pos_y??50}%`,
+  } : { background: 'var(--bg-surface-3)' };
+
+  return ReactDOM.createPortal(
+    <div style={{position:'fixed',inset:0,zIndex:9000,background:'rgba(0,0,0,0.92)',
+      backdropFilter:'blur(6px)',display:'flex',alignItems:'center',justifyContent:'center',padding:24}}
+      onClick={e=>{e.stopPropagation();if(e.target===e.currentTarget)onClose();}}>
+      <div style={{background:'var(--bg-surface)',border:'1px solid var(--border-light)',
+        borderRadius:'var(--radius)',width:'100%',maxWidth:640,maxHeight:'90vh',
+        overflow:'hidden',display:'flex',flexDirection:'column',boxShadow:'0 32px 80px rgba(0,0,0,0.7)'}}
+        onClick={e=>e.stopPropagation()}>
+
+        {/* Header — capa + título + fechar */}
+        <div style={{position:'relative',flexShrink:0}}>
+          {event.cover_url ? (
+            <div style={{...coverStyle,width:'100%',height:180,position:'relative'}}>
+              <div style={{position:'absolute',inset:0,background:'linear-gradient(to bottom,transparent 40%,rgba(0,0,0,0.8))'}} />
+              <div style={{position:'absolute',bottom:16,left:20,right:52}}>
+                <span className={`badge ${st.cls}`} style={{marginBottom:6,display:'inline-flex'}}><Dot />{st.label}</span>
+                <h2 style={{fontFamily:'var(--font-condensed)',fontStyle:'italic',fontWeight:900,
+                  fontSize:'1.6rem',textTransform:'uppercase',color:'#fff',margin:0,letterSpacing:'.02em'}}>
+                  {event.title}
+                </h2>
+              </div>
+            </div>
+          ) : (
+            <div style={{padding:'20px 20px 0',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+              <div>
+                <span className={`badge ${st.cls}`} style={{marginBottom:8,display:'inline-flex'}}><Dot />{st.label}</span>
+                <h2 style={{fontFamily:'var(--font-condensed)',fontStyle:'italic',fontWeight:900,
+                  fontSize:'1.6rem',textTransform:'uppercase',margin:0,letterSpacing:'.02em'}}>
+                  {event.title}
+                </h2>
+              </div>
+            </div>
+          )}
+          <button onClick={onClose} style={{position:'absolute',top:12,right:12,width:32,height:32,
+            borderRadius:'50%',background:'rgba(0,0,0,0.6)',border:'1px solid rgba(255,255,255,0.2)',color:'#fff',
+            cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',zIndex:2}}>
+            <Icons.X />
+          </button>
+        </div>
+
+        {/* Conteúdo scrollável */}
+        <div style={{padding:'16px 20px',overflowY:'auto',flex:1,display:'flex',flexDirection:'column',gap:12}}>
+
+          {/* Infos */}
+          <div style={{display:'flex',flexWrap:'wrap',gap:10}}>
+            {!event.cover_url && null}
+            {event.date && (
+              <div style={{display:'flex',alignItems:'center',gap:6,color:'var(--text-secondary)',fontSize:'0.85rem'}}>
+                <Icons.Calendar />{dateStr}
+              </div>
+            )}
+            {(event.location || event.city) && (
+              <div style={{display:'flex',alignItems:'center',gap:6,color:'var(--text-secondary)',fontSize:'0.85rem'}}>
+                <Icons.Pin />{[event.location, event.city].filter(Boolean).join(' · ')}
+              </div>
+            )}
+            {event.sport && <span className="tag">{event.sport}</span>}
+            {event.photos > 0 && (
+              <span style={{color:'var(--text-secondary)',fontSize:'0.85rem'}}>
+                <Icons.Image /> {event.photos.toLocaleString('pt-BR')} fotos
+              </span>
+            )}
+          </div>
+
+          {event.description && (
+            <p style={{color:'var(--text-secondary)',fontSize:'0.88rem',lineHeight:1.6,margin:0}}>
+              {event.description}
+            </p>
+          )}
+
+          {/* Galeria de fotos */}
+          <div>
+            <div style={{fontFamily:'var(--font-mono)',fontSize:'0.62rem',textTransform:'uppercase',
+              letterSpacing:'0.06em',color:'var(--text-muted)',marginBottom:8}}>
+              {photos.length > 0 ? `${photos.length} foto${photos.length>1?'s':''} do evento` : 'Fotos do evento'}
+            </div>
+            {photos.length > 0 ? (
+              <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:6}}>
+                {photos.map(p => (
+                  <div key={p.id} style={{aspectRatio:'3/4',borderRadius:6,overflow:'hidden',background:'var(--bg-surface-3)'}}>
+                    <img src={p.image_url} loading="lazy" style={{width:'100%',height:'100%',objectFit:'cover',
+                      transform:`scale(${p.scale||1}) translate(${(50-(p.pos_x??50))*0.5}%,${(50-(p.pos_y??50))*0.5}%)`,
+                      transformOrigin:'center center'}} />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div style={{textAlign:'center',padding:'24px 0',color:'var(--text-muted)',
+                fontFamily:'var(--font-mono)',fontSize:'0.7rem',border:'1px dashed var(--border)',borderRadius:8}}>
+                Fotos em breve
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Rodapé — CTA */}
+        <div style={{padding:'16px 28px',borderTop:'1px solid var(--border)',flexShrink:0}}>
+          {event.status === 'available' && event.store_url ? (
+            <a href={event.store_url} target="_blank" rel="noopener"
+              style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8,
+                width:'100%',padding:'16px',borderRadius:'var(--radius-sm)',
+                background:'#fff',color:'#080808',fontWeight:900,fontSize:'0.9rem',
+                letterSpacing:'.08em',textTransform:'uppercase',textDecoration:'none',
+                boxShadow:'0 4px 20px rgba(255,255,255,0.15)'}}>
+              🛒 Comprar minhas fotos <Icons.ExternalLink />
+            </a>
+          ) : (
+            <button onClick={() => { onClose(); onNotify(event); }}
+              style={{width:'100%',padding:'14px',borderRadius:'var(--radius-sm)',
+                background:'var(--bg-surface-3)',border:'1px solid var(--border-light)',
+                color:'var(--text-primary)',cursor:'pointer',display:'flex',
+                alignItems:'center',justifyContent:'center',gap:8,fontSize:'0.88rem'}}>
+              <Icons.Bell /> Avise-me quando disponível
+            </button>
+          )}
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+}
+
+// ════════════════════════════════════════════════════════════════
+// EDIT EVENT MODAL
+// ════════════════════════════════════════════════════════════════
+function EditEventModal({ event, onClose, onSave }) {
+  const [form, setForm] = useState({
+    title:       event.title       || '',
+    date:        event.date        || '',
+    location:    event.location    || '',
+    city:        event.city        || '',
+    sport:       event.sport       || '',
+    description: event.description || '',
+    photos:      event.photos      || 0,
+    status:      event.status      || 'available',
+    store:       event.store       || '',
+    storeUrl:    event.store_url   || '',
+  });
+  const [saving, setSaving]         = useState(false);
+  const [errors, setErrors]         = useState({});
+  const [eventPhotos, setEventPhotos] = useState([]);
+  const [uploading, setUploading]   = useState(null); // índice do slot sendo enviado
+  const [cropSlot, setCropSlot]     = useState(null); // { index, src, file }
+  const [dispUrl, setDispUrl]       = useState(event.store_url || '');
+  const [fetching, setFetching]     = useState(false);
+  const [fetchMsg, setFetchMsg]     = useState(null);
+  const set = (k,v) => setForm(f=>({...f,[k]:v}));
+
+  const fetchDisposicaoEdit = async () => {
+    const url = dispUrl.trim();
+    if (!url || !url.includes('disposicao.com.br')) {
+      setFetchMsg({ ok:false, text:'Cole um link válido da Disposição (disposicao.com.br/…)' });
+      return;
+    }
+    setFetching(true);
+    setFetchMsg(null);
+    try {
+      // microlink.io busca server-side sem CORS, suporta seletores CSS customizados
+      const api = `https://api.microlink.io/?url=${encodeURIComponent(url)}`
+        + `&data.fotos.selector=.badge-meta&data.fotos.type=text`
+        + `&data.loc.selector=span%3Ahas(.fa-map-marker-alt)&data.loc.type=text`;
+      const res  = await fetch(api, { signal: AbortSignal.timeout(12000) });
+      if (!res.ok) throw new Error('microlink falhou: ' + res.status);
+      const json = await res.json();
+      if (json.status !== 'success') throw new Error('microlink status: ' + json.status);
+      const d = json.data;
+
+      const title = (d.title || '').trim();
+
+      let date = '';
+      const cdnUrl    = d.image?.url || d.logo?.url || '';
+      const dateMatch = cdnUrl.match(/galerias\/(\d{4}-\d{2}-\d{2})/);
+      if (dateMatch) date = dateMatch[1];
+
+      let photos = 0;
+      const fotosMatch = (d.fotos || '').match(/(\d+)/);
+      if (fotosMatch) photos = parseInt(fotosMatch[1]);
+
+      let city = '';
+      const locRaw = (d.loc || '').replace(/<[^>]+>/g, '').trim();
+      if (locRaw) city = locRaw.replace(/-([A-Z]{2})$/, ', $1');
+
+      const storeUrl = url.split('?')[0];
+      set('title',    title    || form.title);
+      set('date',     date     || form.date);
+      set('city',     city     || form.city);
+      set('photos',   photos   || form.photos);
+      set('store',    'Disposição');
+      set('storeUrl', storeUrl || form.storeUrl);
+
+      const found = [title&&'título', date&&'data', city&&'cidade', photos&&`${photos} fotos`].filter(Boolean);
+      setFetchMsg({ ok:true, text:`✓ Importado: ${found.join(', ')}` });
+    } catch(err) {
+      setFetchMsg({ ok:false, text:'Erro ao buscar. Verifique o link e tente novamente.' });
+      console.error('fetchDisposicaoEdit:', err);
+    } finally {
+      setFetching(false);
+    }
+  };
+
+  useEffect(() => {
+    const onKey = e => { if(e.key==='Escape') onClose(); };
+    document.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    // Carrega fotos do evento — normaliza position se necessário
+    sb.from('event_photos').select('*').eq('event_id', event.id).order('position')
+      .then(({ data, error }) => {
+        if (error) { console.error('event_photos load:', error); return; }
+        if (data) {
+          // garante position 0-5 mesmo para registros antigos sem position
+          const normalized = data.map((p, i) => ({ ...p, position: p.position ?? i }));
+          setEventPhotos(normalized);
+        }
+      });
+    return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow=''; };
+  }, []);
+
+
+  const removePhoto = async (id) => {
+    if (!window.confirm('Remover esta foto?')) return;
+    const { error } = await sb.from('event_photos').delete().eq('id', id);
+    if (!error) setEventPhotos(prev => prev.filter(p => p.id !== id));
+  };
+
+  const submit = async e => {
+    e.preventDefault();
+    const errs = {};
+    if (!form.title.trim()) errs.title = 'Título obrigatório';
+    if (!form.date)         errs.date  = 'Data obrigatória';
+    if (Object.keys(errs).length) { setErrors(errs); return; }
+    setSaving(true);
+    const { data, error } = await sb.from('events').update({
+      title:       form.title,
+      date:        form.date,
+      location:    form.location    || null,
+      city:        form.city        || null,
+      sport:       form.sport       || null,
+      description: form.description || null,
+      photos:      Number(form.photos) || 0,
+      status:      form.status,
+      store:       form.store       || null,
+      store_url:   form.storeUrl    || null,
+    }).eq('id', event.id).select().single();
+    setSaving(false);
+    if (error) { alert('Erro ao salvar: ' + error.message); return; }
+    onSave(data);
+  };
+
+  const inputStyle = {
+    background:'var(--bg-surface)',border:'1.5px solid var(--border)',borderRadius:'var(--radius-sm)',
+    padding:'10px 14px',color:'var(--text-primary)',fontSize:'0.9rem',outline:'none',width:'100%',
+    fontFamily:'inherit',boxSizing:'border-box',
+  };
+  const labelStyle = { display:'block',fontFamily:'var(--font-mono)',fontSize:'0.65rem',
+    textTransform:'uppercase',letterSpacing:'0.06em',color:'var(--text-muted)',marginBottom:5 };
+
+  return ReactDOM.createPortal(
+    <div className="modal-overlay" onClick={e=>{e.stopPropagation();if(e.target===e.currentTarget)onClose();}}>
+      <div className="modal-box" style={{maxWidth:560}} onClick={e=>e.stopPropagation()}>
+        <div className="modal-header" style={{padding:'20px 24px',borderBottom:'1px solid var(--border)',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+          <h3 style={{fontSize:'1.1rem'}}>✏️ Editar Evento</h3>
+          <button className="modal-close" style={{position:'static'}} onClick={onClose}><Icons.X /></button>
+        </div>
+        <form onSubmit={submit} noValidate>
+          <div className="modal-body" style={{overflowY:'auto',maxHeight:'72vh',display:'flex',flexDirection:'column',gap:14}}>
+
+            {/* Capa */}
+            <div>
+              <div style={labelStyle}>Foto de capa</div>
+              <div style={{borderRadius:'var(--radius-sm)',overflow:'hidden'}}>
+                <CropableImage
+                  sport={form.sport||'Corrida'} label="Foto de capa" aspectRatio="16/9"
+                  initialSrc={event.cover_url}
+                  initialPosX={event.cover_pos_x} initialPosY={event.cover_pos_y} initialScale={event.cover_scale}
+                  onSave={async (url, px, py, sc) => {
+                    const { error } = await sb.from('events').update({ cover_url: url, cover_pos_x: px, cover_pos_y: py, cover_scale: sc }).eq('id', event.id);
+                    if (error) alert('Erro ao salvar capa: ' + error.message);
+                    else onSave({ ...event, cover_url: url, cover_pos_x: px, cover_pos_y: py, cover_scale: sc });
+                  }}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label style={labelStyle}>Título *</label>
+              <input style={{...inputStyle, borderColor: errors.title?'#f87171':'var(--border)'}}
+                value={form.title} onChange={e=>set('title',e.target.value)} />
+              {errors.title && <span style={{color:'#f87171',fontSize:'0.75rem'}}>{errors.title}</span>}
+            </div>
+
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+              <div>
+                <label style={labelStyle}>Data *</label>
+                <input type="date" style={{...inputStyle, borderColor: errors.date?'#f87171':'var(--border)'}}
+                  value={form.date} onChange={e=>set('date',e.target.value)} />
+                {errors.date && <span style={{color:'#f87171',fontSize:'0.75rem'}}>{errors.date}</span>}
+              </div>
+              <div>
+                <label style={labelStyle}>Modalidade</label>
+                <input style={inputStyle} placeholder="Ex: Corrida, Futebol…"
+                  value={form.sport} onChange={e=>set('sport',e.target.value)} />
+              </div>
+            </div>
+
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+              <div>
+                <label style={labelStyle}>Local</label>
+                <input style={inputStyle} placeholder="Ex: Parque Barigui"
+                  value={form.location} onChange={e=>set('location',e.target.value)} />
+              </div>
+              <div>
+                <label style={labelStyle}>Cidade</label>
+                <input style={inputStyle} placeholder="Ex: Curitiba, PR"
+                  value={form.city} onChange={e=>set('city',e.target.value)} />
+              </div>
+            </div>
+
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+              <div>
+                <label style={labelStyle}>Qtd. de fotos</label>
+                <input type="number" min="0" style={inputStyle}
+                  value={form.photos} onChange={e=>set('photos',e.target.value)} />
+              </div>
+              <div>
+                <label style={labelStyle}>Status</label>
+                <select style={{...inputStyle,cursor:'pointer'}}
+                  value={form.status} onChange={e=>set('status',e.target.value)}>
+                  <option value="available">Disponível</option>
+                  <option value="editing">Em edição</option>
+                  <option value="soon">Em breve</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label style={labelStyle}>Link da loja (Disposição etc.)</label>
+              <input type="url" style={inputStyle} placeholder="https://…"
+                value={form.storeUrl} onChange={e=>set('storeUrl',e.target.value)} />
+            </div>
+
+            {/* ── Importar da Disposição ── */}
+            <div style={{
+              background:'var(--bg-surface-3)',border:'1px solid var(--border-light)',
+              borderRadius:'var(--radius-sm)',padding:'14px 16px',
+            }}>
+              <div style={{fontFamily:'var(--font-mono)',fontSize:'0.65rem',textTransform:'uppercase',
+                letterSpacing:'0.08em',color:'var(--accent-text)',marginBottom:8,display:'flex',alignItems:'center',gap:6}}>
+                <span>⚡</span> Importar dados da Disposição
+              </div>
+              <div style={{display:'flex',gap:8}}>
+                <input
+                  style={{...inputStyle,flex:1,fontSize:'0.82rem',padding:'9px 12px'}}
+                  placeholder="https://dmfoto.disposicao.com.br/…"
+                  value={dispUrl}
+                  onChange={e=>setDispUrl(e.target.value)}
+                  onKeyDown={e=>e.key==='Enter'&&(e.preventDefault(),fetchDisposicaoEdit())}
+                />
+                <button type="button"
+                  style={{background:'var(--accent)',color:'#fff',border:'none',borderRadius:'var(--radius-sm)',
+                    padding:'9px 16px',fontWeight:700,cursor:fetching?'wait':'pointer',whiteSpace:'nowrap',
+                    opacity:fetching?0.7:1,fontSize:'0.82rem'}}
+                  onClick={fetchDisposicaoEdit}
+                  disabled={fetching}>
+                  {fetching ? '…' : 'Importar'}
+                </button>
+              </div>
+              {fetchMsg && (
+                <div style={{marginTop:8,fontSize:'0.78rem',
+                  color: fetchMsg.ok ? 'var(--accent-text)' : '#f87171'}}>
+                  {fetchMsg.text}
+                </div>
+              )}
+            </div>
+
+            <div>
+              <label style={labelStyle}>Descrição</label>
+              <textarea rows={3} style={{...inputStyle,resize:'vertical'}}
+                value={form.description} onChange={e=>set('description',e.target.value)} />
+            </div>
+
+            {/* ── Fotos do evento — grade de slots fixos ── */}
+            <div style={{borderTop:'1px solid var(--border)',paddingTop:16}}>
+              <label style={{...labelStyle,marginBottom:12}}>Fotos do evento (até 6)</label>
+              <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:8}}>
+                {Array.from({length:6}).map((_,i) => {
+                  const photo = eventPhotos.find(p => p.position === i);
+                  const isUploading = uploading === i;
+                  const inputId = `evt-photo-${i}`;
+                  return (
+                    <div key={i} style={{position:'relative',aspectRatio:'3/4',borderRadius:'var(--radius-sm)',overflow:'hidden',
+                      background:'var(--bg-surface-2)',border:'1.5px dashed var(--border-light)',cursor:'pointer'}}
+                      onClick={()=>!isUploading&&document.getElementById(inputId)&&document.getElementById(inputId).click()}>
+                      <input id={inputId} type="file" accept="image/*" style={{display:'none'}}
+                        onChange={e=>{
+                          const file = e.target.files[0]; if(!file) return;
+                          const reader = new FileReader();
+                          reader.onload = ev => setCropSlot({ index: i, src: ev.target.result, file });
+                          reader.readAsDataURL(file);
+                          e.target.value = '';
+                        }}
+                      />
+                      {isUploading ? (
+                        <div style={{position:'absolute',inset:0,display:'flex',alignItems:'center',justifyContent:'center',
+                          background:'var(--bg-surface-3)',fontFamily:'var(--font-mono)',fontSize:'0.65rem',color:'var(--text-muted)'}}>
+                          ⏳
+                        </div>
+                      ) : photo ? (
+                        <>
+                          <img src={photo.image_url} loading="lazy" style={{width:'100%',height:'100%',objectFit:'cover',
+                            transform:`scale(${photo.scale||1}) translate(${(50-(photo.pos_x??50))*0.5}%,${(50-(photo.pos_y??50))*0.5}%)`,
+                            transformOrigin:'center center'}} />
+                          <div style={{position:'absolute',inset:0,background:'rgba(0,0,0,0)',transition:'background .2s',display:'flex',alignItems:'center',justifyContent:'center',gap:6,opacity:0}}
+                            className="photo-slot-hover">
+                          </div>
+                          <button type="button"
+                            onClick={e=>{e.stopPropagation();removePhoto(photo.id);}}
+                            style={{position:'absolute',top:4,right:4,width:22,height:22,borderRadius:'50%',
+                              background:'rgba(239,68,68,0.9)',border:'none',color:'#fff',cursor:'pointer',
+                              display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,fontWeight:700,zIndex:2}}>
+                            ✕
+                          </button>
+                          <div style={{position:'absolute',bottom:0,left:0,right:0,padding:'4px 6px',
+                            background:'rgba(0,0,0,0.5)',fontFamily:'var(--font-mono)',fontSize:'0.55rem',
+                            color:'rgba(255,255,255,0.6)',textAlign:'center'}}>
+                            clique para trocar
+                          </div>
+                        </>
+                      ) : (
+                        <div style={{position:'absolute',inset:0,display:'flex',flexDirection:'column',
+                          alignItems:'center',justifyContent:'center',gap:8,color:'var(--text-muted)'}}>
+                          <Icons.Camera />
+                          <span style={{fontFamily:'var(--font-mono)',fontSize:'0.6rem',letterSpacing:'0.08em',textTransform:'uppercase'}}>
+                            Foto {i+1}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+          </div>
+          <div className="modal-footer" style={{display:'flex',gap:10,padding:'16px 24px',borderTop:'1px solid var(--border)'}}>
+            <button type="button" className="btn btn-ghost" style={{flex:1}} onClick={onClose}>Cancelar</button>
+            <button type="submit" className="btn btn-primary" style={{flex:2}} disabled={saving}>
+              {saving ? 'Salvando…' : '✓ Salvar alterações'}
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {/* Editor de posicionamento para fotos de evento */}
+      {cropSlot && (
+        <PhotoEditorModal
+          src={cropSlot.src}
+          aspectRatio="3/4"
+          onConfirm={async (posX, posY, scale) => {
+            const { index, file } = cropSlot;
+            setCropSlot(null);
+            setUploading(index);
+            try {
+              const ext = (file.name.split('.').pop()||'jpg').toLowerCase();
+              const fname = `evt-${event.id}-${index}-${Date.now()}.${ext}`;
+              const { error: upErr } = await sb.storage.from('photos').upload(fname, file, { upsert: true });
+              if (upErr) { alert('Erro no upload: ' + upErr.message); return; }
+              const url = sb.storage.from('photos').getPublicUrl(fname).data.publicUrl;
+              const photoAtPos = eventPhotos.find(p => p.position === index);
+              if (photoAtPos) {
+                const {data,error} = await sb.from('event_photos').update({image_url:url,pos_x:posX,pos_y:posY,scale}).eq('id',photoAtPos.id).select().single();
+                if(error){ alert('Erro ao salvar: '+error.message); return; }
+                if(data) setEventPhotos(prev=>prev.map(p=>p.id===data.id?data:p));
+              } else {
+                const {data,error} = await sb.from('event_photos').insert({event_id:event.id,image_url:url,position:index,pos_x:posX,pos_y:posY,scale}).select().single();
+                if(error){ alert('Erro ao salvar: '+error.message); return; }
+                if(data) setEventPhotos(prev=>[...prev,data]);
+              }
+            } catch(err){ alert('Erro: '+(err.message||JSON.stringify(err))); }
+            finally{ setUploading(null); }
+          }}
+          onCancel={() => setCropSlot(null)}
+        />
+      )}
+    </div>,
+    document.body
+  );
+}
+
+function NotifyModal({ event, onClose }) {
+  const [email, setEmail] = useState('');
+  const [done, setDone] = useState(false);
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    const onKey = e => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = ''; };
+  }, []);
+  const handleSubmit = e => {
+    e.preventDefault(); if (!email) return;
+    setLoading(true); setTimeout(() => { setLoading(false); setDone(true); }, 800);
+  };
+  const statusCls = event.status === 'soon' ? 'badge-soon' : 'badge-editing';
+  const statusLabel = event.status === 'soon' ? 'Em breve' : 'Em edição';
+  return (
+    <div className="modal-overlay" onClick={e => e.target===e.currentTarget && onClose()}>
+      <div className="modal-box" style={{maxWidth:420}}>
+        <div className="modal-header">
+          <div className="modal-cover" style={{aspectRatio:'16/7'}}>
+            <PlaceholderImage sport={event.sport} label={event.title} aspectRatio="16/7" />
+            <button className="modal-close" onClick={onClose}><Icons.X /></button>
+          </div>
+          <div className="modal-header-info">
+            <div style={{flex:1}}>
+              <div style={{display:'flex',gap:8,marginBottom:8}}>
+                <span className="tag">{event.sport}</span>
+                <span className={`badge ${statusCls}`}>{statusLabel}</span>
+              </div>
+              <h3 style={{fontSize:'1rem'}}>{event.title}</h3>
+            </div>
+          </div>
+        </div>
+        <div className="modal-body">
+          {done ? (
+            <div className="success-state">
+              <div className="success-icon"><Icons.Check /></div>
+              <h3>Tudo certo!</h3>
+              <p>Você receberá um aviso assim que as fotos de <strong>{event.title}</strong> estiverem disponíveis.</p>
+            </div>
+          ) : (
+            <>
+              <p className="modal-text">{event.status==='soon'?'Este evento ainda não aconteceu. Cadastre seu e-mail para ser notificado assim que as fotos estiverem disponíveis.':'As fotos deste evento estão em processo de edição. Você será avisado por e-mail quando estiverem prontas.'}</p>
+              <form className="notify-form" onSubmit={handleSubmit}>
+                <input type="email" placeholder="seu@email.com" required value={email} onChange={e => setEmail(e.target.value)} />
+                <button type="submit" className="btn btn-primary" disabled={loading}>
+                  {loading ? <span className="btn-spinner"><span className="spinner" /> Cadastrando…</span> : <><Icons.Bell /> Quero ser avisado</>}
+                </button>
+              </form>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Lightbox ──
+function Lightbox({ items, index, onClose, onNavigate }) {
+  useEffect(() => {
+    const onKey = e => {
+      if(e.key==='Escape') onClose();
+      if(e.key==='ArrowLeft') onNavigate(-1);
+      if(e.key==='ArrowRight') onNavigate(1);
+    };
+    document.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = ''; };
+  }, [index]);
+  const item = items[index];
+  return (
+    <div className="lightbox" onClick={e => e.target===e.currentTarget && onClose()}>
+      <button className="lightbox-close" onClick={onClose}><Icons.X /></button>
+      <button className="lightbox-nav prev" onClick={() => onNavigate(-1)}><Icons.ChevronLeft /></button>
+      <div className="lightbox-img"><PlaceholderImage sport={item.sport} label={item.title} aspectRatio={SIZE_RATIO[item.size]||'4/3'} /></div>
+      <button className="lightbox-nav next" onClick={() => onNavigate(1)}><Icons.ChevronRight /></button>
+      <div className="lightbox-info">
+        <span className="lb-title">{item.title}</span>
+        <span className="tag">{item.sport}</span>
+        <span className="lightbox-counter">{index+1} / {items.length}</span>
+      </div>
+    </div>
+  );
+}
+
+// ── Footer ──
+function Footer({ navigate }) {
+  const { openLogin, isAdmin, logout } = useAdmin();
+  const [clicks, setClicks] = useState(0);
+  const clickTimer = useRef(null);
+
+  const handleSecretClick = () => {
+    const n = clicks + 1;
+    setClicks(n);
+    clearTimeout(clickTimer.current);
+    if (n >= 5) { setClicks(0); openLogin(); }
+    else { clickTimer.current = setTimeout(() => setClicks(0), 2000); }
+  };
+
+  return (
+    <footer>
+      <div className="container">
+        <div className="footer-grid">
+          <div className="footer-brand">
+            <button className="nav-logo" onClick={() => navigate('home')} style={{marginBottom:4}}>
+              <span className="logo-icon"><Icons.Camera /></span>
+              DMFOTO
+            </button>
+            {/* ── Parceiro da Plataforma Disposicao ── */}
+            <p className="footer-partner-tag">Parceiro da Plataforma Disposicao</p>
+            <p>Fotografia esportiva profissional. Capturando cada segundo de superação nos eventos que importam.</p>
+          </div>
+          <div className="footer-col">
+            <h4>Navegação</h4>
+            <ul className="footer-links">
+              {[['home','Início'],['events','Eventos'],['portfolio','Portfólio'],['about','Sobre'],['hire','Contato']].map(([id,label]) => (
+                <li key={id}><a href="#" onClick={e=>{e.preventDefault();navigate(id);}}>{label}</a></li>
+              ))}
+            </ul>
+          </div>
+          <div className="footer-col">
+            <h4>Contato</h4>
+            <div style={{display:'flex',flexDirection:'column',gap:8,marginTop:4}}>
+              <a className="social-btn social-btn-wa" href="https://wa.me/5544991586105" target="_blank" rel="noopener" style={{fontSize:'0.82rem',padding:'9px 14px'}}>
+                <Icons.WhatsApp /><span style={{fontWeight:800,letterSpacing:'0.06em'}}>WHATSAPP</span>
+              </a>
+              <a className="social-btn social-btn-ig" href="https://www.instagram.com/dmfotoesporte/" target="_blank" rel="noopener" style={{fontSize:'0.82rem',padding:'9px 14px'}}>
+                <Icons.Instagram /><span style={{fontWeight:800,letterSpacing:'0.06em'}}>INSTAGRAM</span>
+              </a>
+            </div>
+          </div>
+          <div className="footer-col">
+            <h4>Trabalhos feitos</h4>
+            <ul className="footer-links">
+              {['CBF','FPF','Maringá FC','Goiás','Ponte Preta','Cianorte'].map(name => (
+                <li key={name}><a href="#">{name}</a></li>
+              ))}
+            </ul>
+          </div>
+        </div>
+        <div className="footer-note">
+          <Icons.Shield />
+          As fotos dos eventos são vendidas em plataformas parceiras certificadas. Pagamento e download realizados com segurança diretamente na loja parceira.
+        </div>
+        <div className="footer-sport-bar">
+          <span>DM FOTO</span>
+          <span className="fsb-sep">·</span>
+          <span>Maringá / PR</span>
+        </div>
+        <div className="footer-bottom">
+          <span style={{cursor:'default',userSelect:'none'}} onClick={handleSecretClick}>
+            © 2025 DM FOTO · Todos os direitos reservados
+          </span>
+          <div style={{display:'flex',alignItems:'center',gap:12}}>
+            {isAdmin && (
+              <button onClick={logout} style={{
+                fontFamily:'var(--font-mono)',fontSize:'0.68rem',color:'var(--text-muted)',
+                background:'none',border:'none',cursor:'pointer',letterSpacing:'.04em'
+              }}>⬡ Sair do admin</button>
+            )}
+            <span>Desenvolvido com ❤️ para o esporte</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+// ── Tweaks Panel ──
+function TweaksPanel() {
+  const { isAdmin } = useAdmin();
+  const [open, setOpen] = useState(false);
+  const [accent, setAccent] = useState('#3b82f6');
+  const [font, setFont] = useState('Plus Jakarta Sans');
+  const [heroLayout, setHeroLayout] = useState('left');
+  const [heroX, setHeroX] = useState(0);
+  const [radius, setRadius] = useState(18);
+  const colors = [{hex:'#3b82f6',label:'Azul'},{hex:'#8b5cf6',label:'Roxo'},{hex:'#10b981',label:'Verde'},{hex:'#f59e0b',label:'Âmbar'},{hex:'#ef4444',label:'Vermelho'},{hex:'#ec4899',label:'Rosa'}];
+  const fonts = ['Plus Jakarta Sans','Sora','Archivo'];
+  const apply = (a,f,h,hx,r) => {
+    document.documentElement.style.setProperty('--accent',a);
+    document.documentElement.style.setProperty('--accent-glow',a+'55');
+    document.documentElement.style.setProperty('--accent-dim',a+'1a');
+    document.documentElement.style.setProperty('--font-sans',`'${f}', sans-serif`);
+    document.documentElement.style.setProperty('--radius',`${r}px`);
+    document.documentElement.style.setProperty('--radius-sm',`${Math.round(r*0.56)}px`);
+    window.__heroLayout = h; window.__heroX = hx; window.dispatchEvent(new Event('tweaks-change'));
+  };
+  if (!isAdmin) return null;
+  return (
+    <>
+      <button className={`tweaks-toggle${open?' open':''}`} onClick={() => setOpen(v=>!v)} title="Personalizar"><Icons.Settings /></button>
+      {open && (
+        <div className="tweaks-panel">
+          <h4>⚡ Personalizar</h4>
+          <div className="tweaks-group">
+            <div className="tweaks-label">Cor de destaque</div>
+            <div className="color-swatches">
+              {colors.map(c => <button key={c.hex} className={`color-swatch${accent===c.hex?' active':''}`} style={{background:c.hex}} title={c.label} onClick={() => { setAccent(c.hex); apply(c.hex,font,heroLayout,heroX,radius); }} />)}
+            </div>
+          </div>
+          <div className="tweaks-group">
+            <div className="tweaks-label">Tipografia</div>
+            <div className="font-options">
+              {fonts.map(f => <button key={f} className={`font-option${font===f?' active':''}`} style={{fontFamily:`'${f}',sans-serif`}} onClick={() => { setFont(f); apply(accent,f,heroLayout,heroX,radius); }}>{f.split(' ')[0]}</button>)}
+            </div>
+          </div>
+          <div className="tweaks-group">
+            <div className="tweaks-label">Layout do herói</div>
+            <div className="toggle-options">
+              {[['left','Esquerda'],['center','Centro']].map(([v,l]) => <button key={v} className={`toggle-opt${heroLayout===v?' active':''}`} onClick={() => { setHeroLayout(v); apply(accent,font,v,heroX,radius); }}>{l}</button>)}
+            </div>
+          </div>
+          {heroLayout === 'left' && (
+            <div className="tweaks-group">
+              <div className="tweaks-label">Posição horizontal — {heroX}%</div>
+              <input type="range" className="radius-slider" min="0" max="100" step="1" value={heroX}
+                onChange={e => { const hx=Number(e.target.value); setHeroX(hx); apply(accent,font,heroLayout,hx,radius); }} />
+            </div>
+          )}
+          <div className="tweaks-group">
+            <div className="tweaks-label">Arredondamento — {radius}px</div>
+            <input type="range" className="radius-slider" min="4" max="28" value={radius} onChange={e => { const r=Number(e.target.value); setRadius(r); apply(accent,font,heroLayout,heroX,r); }} />
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+// ════════════════════════════════════════════════════════════════
+// PAGES
+// ════════════════════════════════════════════════════════════════
+
+// ── Home Page ──
+function HomePage({ navigate, onNotify }) {
+  const { isAdmin } = useAdmin();
+  const [heroLayout, setHeroLayout] = useState(window.__heroLayout||'left');
+  const [heroX, setHeroX] = useState(window.__heroX||0);
+  const [photoRows, setPhotoRows] = useState(2);
+  const [homePhotos, setHomePhotos] = useState([]);
+  // Cover image states (Prompt 10)
+  const [coverImage, setCoverImage] = useState(null);
+  const [coverPending, setCoverPending] = useState(null); // aguardando posicionamento
+  const [coverX, setCoverX] = useState(50);
+  const [coverY, setCoverY] = useState(50);
+  const coverInputRef = React.useRef();
+
+  useEffect(() => {
+    const upd = () => { setHeroLayout(window.__heroLayout||'left'); setHeroX(window.__heroX||0); };
+    window.addEventListener('tweaks-change', upd);
+    return () => window.removeEventListener('tweaks-change', upd);
+  }, []);
+
+  // Carrega fotos da home do Supabase (position >= 0 = galeria; position = -1 = capa hero)
+  useEffect(() => {
+    sb.from('homepage_photos').select('*').order('position', { ascending: true })
+      .then(({ data }) => {
+        if (!data) return;
+        const hero = data.find(p => p.position === -1);
+        if (hero) { setCoverImage(hero.image_url); setCoverX(hero.image_pos_x ?? 50); setCoverY(hero.image_pos_y ?? 50); }
+        const gallery = data.filter(p => p.position >= 0);
+        if (gallery.length) { setHomePhotos(gallery); setPhotoRows(Math.ceil(gallery.length / 4)); }
+      });
+  }, []);
+
+  const handleCoverFile = e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => setCoverPending(ev.target.result);
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  };
+
+  // Upsert foto por posição
+  const saveHomePhoto = async (position, url, px, py, sc) => {
+    const existing = homePhotos.find(p => p.position === position);
+    if (existing) {
+      const { data, error } = await sb.from('homepage_photos')
+        .update({ image_url: url, image_pos_x: px, image_pos_y: py, image_scale: sc })
+        .eq('id', existing.id).select().single();
+      if (error) { console.error('homePhoto update error:', error); alert('Erro: ' + error.message); return; }
+      if (data) setHomePhotos(prev => prev.map(p => p.id === data.id ? data : p));
+    } else {
+      const { data, error } = await sb.from('homepage_photos')
+        .insert({ position, image_url: url, image_pos_x: px, image_pos_y: py, image_scale: sc })
+        .select().single();
+      if (error) { console.error('homePhoto insert error:', error); alert('Erro: ' + error.message); return; }
+      if (data) setHomePhotos(prev => [...prev, data]);
+    }
+  };
+
+  const totalPhotos = photoRows * 4;
+
+  return (
+    <main>
+      {/* ── Hero ── */}
+      <section className="hero">
+        {/* Fundo padrão (gradiente + grid + pitch lines) */}
+        <div className="hero-bg" />
+        <div className="hero-grid-overlay" />
+        <div className="hero-pitch-lines" />
+        {/* Foto de capa com zoom-out infinito */}
+        {coverImage && (
+          <div style={{position:'absolute',inset:0,zIndex:0,overflow:'hidden'}}>
+            <img
+              src={coverImage}
+              className="hero-cover-img"
+              style={{objectPosition:`${coverX}% ${coverY}%`}}
+            />
+            <div style={{
+              position:'absolute',inset:0,zIndex:1,
+              background:'linear-gradient(to bottom, rgba(6,8,13,0.3) 0%, transparent 30%, var(--bg-primary) 100%)',
+              pointerEvents:'none',
+            }} />
+          </div>
+        )}
+        <div className="hero-two-col">
+          {/* Coluna esquerda — texto */}
+          <div className="hero-left-col">
+            <div className="hero-scoreboard anim-label">
+              <span className="sb-seg">Maringá/PR</span>
+              <span className="sb-seg accent">DM Foto</span>
+              <span className="sb-seg">Fotografia esportiva</span>
+            </div>
+            <h1 className="anim-title">
+              Não é só<br />
+              uma <span className="outline">foto.</span>
+            </h1>
+            <p className="hero-sub anim-subtitle">
+              A fotografia é um frame congelado da história; o momento exato em que emoção, esforço e legado se encontram.
+            </p>
+            <div className="hero-actions">
+              <button className="btn btn-primary btn-lg" onClick={() => navigate('events')}><Icons.Search /> Encontrar minhas fotos</button>
+              <button className="btn btn-outline btn-lg" onClick={() => navigate('portfolio')}>Ver portfólio <Icons.ArrowRight /></button>
+            </div>
+          </div>
+
+        </div>
+        {/* Painel de controle da foto de capa — somente admin */}
+        {isAdmin && (
+          <>
+            <div className="hero-cover-panel">
+              <button className="hero-cover-add-btn" onClick={() => coverInputRef.current.click()}>
+                📷 {coverImage ? 'Trocar foto de capa' : 'Adicionar foto de capa'}
+              </button>
+              {coverImage && <>
+                <button className="hero-cover-add-btn"
+                  style={{borderColor:'rgba(255,255,255,0.25)',color:'var(--accent-text)'}}
+                  onClick={()=>setCoverPending(coverImage)}>
+                  ✏️ Reposicionar
+                </button>
+                <button className="hero-cover-add-btn"
+                  style={{background:'rgba(239,68,68,0.12)',borderColor:'#ef4444',color:'#f87171'}}
+                  onClick={async ()=>{ setCoverImage(null); await sb.from('homepage_photos').delete().eq('position',-1); }}>
+                  ✕ Remover foto
+                </button>
+              </>}
+            </div>
+            <input ref={coverInputRef} type="file" accept="image/*" style={{display:'none'}} onChange={handleCoverFile} />
+          </>
+        )}
+
+        {/* Modal de posicionamento da capa — portal */}
+        {coverPending && (
+          <PhotoEditorModal
+            src={coverPending}
+            aspectRatio="16/9"
+            onConfirm={async (px, py) => {
+              try {
+                let url = coverPending;
+                // Se for dataURL (novo upload), envia pro Storage primeiro
+                if (url.startsWith('data:')) {
+                  const res  = await fetch(url);
+                  const blob = await res.blob();
+                  const file = new File([blob], 'hero-cover.jpg', { type: blob.type });
+                  url = await uploadImage(file);
+                }
+                setCoverImage(url); setCoverX(px); setCoverY(py); setCoverPending(null);
+                // Salva/atualiza no Supabase (position = -1 reservado para capa hero)
+                const existing = await sb.from('homepage_photos').select('id').eq('position', -1).maybeSingle();
+                if (existing.data) {
+                  await sb.from('homepage_photos').update({ image_url: url, image_pos_x: px, image_pos_y: py, image_scale: 1 }).eq('id', existing.data.id);
+                } else {
+                  await sb.from('homepage_photos').insert({ position: -1, image_url: url, image_pos_x: px, image_pos_y: py, image_scale: 1 });
+                }
+              } catch(err) {
+                alert('Erro ao salvar capa: ' + err.message);
+                setCoverPending(null);
+              }
+            }}
+            onCancel={() => setCoverPending(null)}
+          />
+        )}
+      </section>
+
+      {/* ── 4. SEM seção "Como funciona" ── */}
+
+      {/* ── 5. Galeria de fotos (substitui events-grid) ── */}
+      <section className="section">
+        <div className="container">
+          <div className="section-header">
+            <h2 className="anim-title">Trabalhos Recentes</h2>
+          </div>
+
+          {/* Grade 4 colunas, aspect-ratio 4:5 */}
+          <div className="photo-gallery-grid">
+            {Array.from({length:totalPhotos}).map((_,i) => {
+              const ph = homePhotos.find(p => p.position === i);
+              return (
+                <div key={i} style={{borderRadius:'var(--radius-sm)',overflow:'hidden',border:'1.5px dashed var(--border-light)'}}>
+                  <CropableImage
+                    sport="Corrida" label={`Foto ${i+1}`} aspectRatio="4/5"
+                    initialSrc={ph?.image_url}
+                    initialPosX={ph?.image_pos_x} initialPosY={ph?.image_pos_y} initialScale={ph?.image_scale}
+                    onSave={(url, px, py, sc) => saveHomePhoto(i, url, px, py, sc)}
+                  />
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Botão adicionar linha — somente admin */}
+          {isAdmin && (
+            <button className="btn btn-outline" style={{marginTop:4}} onClick={() => setPhotoRows(r => r+1)}>
+              <Icons.Plus /> Adicionar linha
+            </button>
+          )}
+
+          {/* Stats — abaixo das fotos */}
+          <div className="hero-stats" style={{marginTop:48,borderTop:'1px solid var(--border)',paddingTop:32}}>
+            {[
+              { val:'200+',         label:'Eventos cobertos' },
+              { val:'180k+',        label:'Fotos entregues' },
+              { val:'Envio Rápido', label:'Prazo médio' },
+            ].map((s,i) => (
+              <div className="hero-stat" key={i}>
+                <div className="stat-val">{s.val}</div>
+                <div className="stat-label">{s.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 6. SEM seção "Modalidades" ── */}
+
+      {/* ── Materiais para ── */}
+      <section className="section" style={{paddingTop:0}}>
+        <div className="container">
+          <div className="materials-cta">
+            <div className="section-label anim-label">Materiais para:</div>
+            <div className="materials-pills">
+              {['Clubes','Atletas','Agências','Organizações','Mídia'].map(item => (
+                <span key={item} className="material-pill">{item}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+// ── Add Event Modal ──
+function AddEventModal({ onClose, onAdd }) {
+  const [form, setForm] = useState({
+    title:'', date:'', location:'', city:'', sport:'',
+    storeUrl:'', store:'Disposição', description:'', status:'available', photos:0, coverUrl:'',
+  });
+  const [errors, setErrors]       = useState({});
+  const [dispUrl, setDispUrl]     = useState('');
+  const [fetching, setFetching]   = useState(false);
+  const [fetchMsg, setFetchMsg]   = useState(null); // {ok, text}
+  const set = (k,v) => setForm(f=>({...f,[k]:v}));
+
+  useEffect(() => {
+    const onKey = e => { if(e.key==='Escape') onClose(); };
+    document.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow=''; };
+  }, []);
+
+  // ── Busca dados da Disposição ──
+  const fetchDisposicao = async () => {
+    const url = dispUrl.trim();
+    if (!url || !url.includes('disposicao.com.br')) {
+      setFetchMsg({ ok:false, text:'Cole um link válido da Disposição (disposicao.com.br/…)' });
+      return;
+    }
+    setFetching(true);
+    setFetchMsg(null);
+    try {
+      // microlink.io busca server-side sem CORS, suporta seletores CSS customizados
+      const api = `https://api.microlink.io/?url=${encodeURIComponent(url)}`
+        + `&data.fotos.selector=.badge-meta&data.fotos.type=text`
+        + `&data.loc.selector=span%3Ahas(.fa-map-marker-alt)&data.loc.type=text`;
+      const res  = await fetch(api, { signal: AbortSignal.timeout(12000) });
+      if (!res.ok) throw new Error('microlink falhou: ' + res.status);
+      const json = await res.json();
+      if (json.status !== 'success') throw new Error('microlink status: ' + json.status);
+      const d = json.data;
+
+      // Título
+      const title = (d.title || '').trim();
+
+      // Data: extraída da URL do CDN /galerias/YYYY-MM-DD-slug/
+      let date = '';
+      const cdnUrl = d.image?.url || d.logo?.url || '';
+      const dateMatch = cdnUrl.match(/galerias\/(\d{4}-\d{2}-\d{2})/);
+      if (dateMatch) date = dateMatch[1];
+
+      // Quantidade de fotos: "377 fotos" → 377
+      let photos = 0;
+      const fotosText = d.fotos || '';
+      const fotosMatch = fotosText.match(/(\d+)/);
+      if (fotosMatch) photos = parseInt(fotosMatch[1]);
+
+      // Cidade: texto do span → "Munhoz de Melo-PR" → "Munhoz de Melo, PR"
+      let city = '';
+      const locRaw = (d.loc || '').replace(/<[^>]+>/g, '').trim();
+      if (locRaw) city = locRaw.replace(/-([A-Z]{2})$/, ', $1');
+
+      const storeUrl = url.split('?')[0];
+
+      setForm(f => ({
+        ...f,
+        title:    title    || f.title,
+        date:     date     || f.date,
+        city:     city     || f.city,
+        photos:   photos   || f.photos,
+        store:    'Disposição',
+        storeUrl: storeUrl || f.storeUrl,
+      }));
+
+      const found = [
+        title  && 'título',
+        date   && 'data',
+        city   && 'cidade',
+        photos && `${photos} fotos`,
+      ].filter(Boolean);
+      setFetchMsg({ ok:true, text:`✓ Importado: ${found.join(', ')}` });
+    } catch(err) {
+      setFetchMsg({ ok:false, text:'Erro ao buscar. Verifique o link e tente novamente.' });
+      console.error('fetchDisposicao:', err);
+    } finally {
+      setFetching(false);
+    }
+  };
+
+  const [saving, setSaving] = useState(false);
+
+  const submit = async e => {
+    e.preventDefault();
+    const errs = {};
+    if(!form.title.trim()) errs.title = 'Título obrigatório';
+    if(!form.date) errs.date = 'Data obrigatória';
+    if(Object.keys(errs).length){ setErrors(errs); return; }
+    setSaving(true);
+    const row = {
+      title:       form.title,
+      date:        form.date,
+      location:    form.location   || null,
+      city:        form.city       || null,
+      sport:       form.sport      || null,
+      description: form.description|| null,
+      photos:      Number(form.photos)||0,
+      status:      form.status     || 'available',
+      store:       form.store      || null,
+      store_url:   form.storeUrl   || null,
+      cover_url:   form.coverUrl   || null,
+      featured:    false,
+    };
+    const { data, error } = await sb.from('events').insert(row).select().single();
+    setSaving(false);
+    if (error) { alert('Erro ao salvar: ' + error.message); return; }
+    onAdd(data);
+  };
+
+  return (
+    <div className="modal-overlay" onClick={e=>e.target===e.currentTarget&&onClose()}>
+      <div className="modal-box" style={{maxWidth:560}}>
+        <div className="modal-header" style={{padding:'20px 24px',borderBottom:'1px solid var(--border)',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+          <h3 style={{fontSize:'1.1rem'}}>＋ Novo Evento</h3>
+          <button className="modal-close" style={{position:'static'}} onClick={onClose}><Icons.X /></button>
+        </div>
+        <form onSubmit={submit} noValidate>
+          <div className="modal-body" style={{overflowY:'auto',maxHeight:'72vh'}}>
+
+            {/* ── Importar da Disposição ── */}
+            <div style={{
+              background:'var(--bg-surface-3)',border:'1px solid var(--border-light)',
+              borderRadius:'var(--radius-sm)',padding:'14px 16px',marginBottom:20,
+            }}>
+              <div style={{fontFamily:'var(--font-mono)',fontSize:'0.65rem',textTransform:'uppercase',
+                letterSpacing:'0.08em',color:'var(--accent-text)',marginBottom:8,display:'flex',alignItems:'center',gap:6}}>
+                <span>⚡</span> Importar da Disposição
+              </div>
+              <div style={{display:'flex',gap:8}}>
+                <input
+                  type="url"
+                  placeholder="https://disposicao.com.br/nome-do-evento"
+                  value={dispUrl}
+                  onChange={e=>setDispUrl(e.target.value)}
+                  onKeyDown={e=>e.key==='Enter'&&(e.preventDefault(),fetchDisposicao())}
+                  style={{flex:1,background:'var(--bg-surface)',border:'1.5px solid var(--border)',
+                    borderRadius:'var(--radius-sm)',padding:'10px 14px',color:'var(--text-primary)',
+                    fontSize:'0.85rem',outline:'none'}}
+                />
+                <button
+                  type="button"
+                  onClick={fetchDisposicao}
+                  disabled={fetching}
+                  style={{padding:'10px 16px',borderRadius:'var(--radius-sm)',
+                    background: fetching ? 'var(--bg-surface-3)' : 'rgba(255,255,255,0.08)',
+                    border:'1px solid var(--accent)',color:'var(--accent-text)',
+                    fontFamily:'var(--font-mono)',fontSize:'0.72rem',cursor:'pointer',
+                    whiteSpace:'nowrap',minWidth:90,
+                    opacity: fetching ? 0.6 : 1}}
+                >{fetching ? '⏳ Buscando…' : '⚡ Importar'}</button>
+              </div>
+              {fetchMsg && (
+                <div style={{marginTop:8,fontFamily:'var(--font-mono)',fontSize:'0.68rem',
+                  color: fetchMsg.ok ? '#4ade80' : '#f87171'}}>
+                  {fetchMsg.text}
+                </div>
+              )}
+            </div>
+
+            <div className="form-group">
+              <label>Título *</label>
+              <input type="text" placeholder="Ex: Maratona de Curitiba 2025" className={errors.title?'error':''} value={form.title} onChange={e=>set('title',e.target.value)} />
+              {errors.title && <span className="error-msg">{errors.title}</span>}
+            </div>
+            <div className="form-row">
+              <div className="form-group">
+                <label>Data *</label>
+                <input type="date" className={errors.date?'error':''} value={form.date} onChange={e=>set('date',e.target.value)} />
+                {errors.date && <span className="error-msg">{errors.date}</span>}
+              </div>
+              <div className="form-group">
+                <label>Status</label>
+                <select value={form.status} onChange={e=>set('status',e.target.value)}>
+                  <option value="available">Disponível</option>
+                  <option value="editing">Em edição</option>
+                  <option value="soon">Em breve</option>
+                </select>
+              </div>
+            </div>
+            <div className="form-row">
+              <div className="form-group">
+                <label>Local / Arena</label>
+                <input type="text" placeholder="Ex: Parque do Ibirapuera" value={form.location} onChange={e=>set('location',e.target.value)} />
+              </div>
+              <div className="form-group">
+                <label>Cidade, Estado</label>
+                <input type="text" placeholder="Ex: São Paulo, SP" value={form.city} onChange={e=>set('city',e.target.value)} />
+              </div>
+            </div>
+            <div className="form-row">
+              <div className="form-group">
+                <label>Modalidade</label>
+                <input type="text" placeholder="Ex: Corrida, Kart, MTB…" value={form.sport} onChange={e=>set('sport',e.target.value)} />
+              </div>
+              <div className="form-group">
+                <label>Qtd. de fotos</label>
+                <input type="number" placeholder="0" min="0" value={form.photos} onChange={e=>set('photos',e.target.value)} />
+              </div>
+            </div>
+            <div className="form-row">
+              <div className="form-group">
+                <label>Plataforma (ex: Fotop)</label>
+                <input type="text" placeholder="Nome da plataforma" value={form.store} onChange={e=>set('store',e.target.value)} />
+              </div>
+              <div className="form-group">
+                <label>Link da galeria</label>
+                <input type="url" placeholder="https://fotop.com.br/…" value={form.storeUrl} onChange={e=>set('storeUrl',e.target.value)} />
+              </div>
+            </div>
+            <div className="form-group">
+              <label>Descrição</label>
+              <textarea placeholder="Breve descrição do evento…" value={form.description} onChange={e=>set('description',e.target.value)} style={{minHeight:80}} />
+            </div>
+            {/* Aviso: fotos após criar */}
+            <div style={{background:'var(--bg-surface-3)',border:'1px solid var(--border-light)',borderRadius:'var(--radius-sm)',padding:'12px 16px',fontSize:'0.82rem',color:'var(--text-muted)',display:'flex',alignItems:'center',gap:8}}>
+              <span style={{fontSize:'1rem'}}>📸</span>
+              <span>Foto de capa e fotos do evento são adicionadas após criar — o editor abrirá automaticamente.</span>
+            </div>
+          </div>
+          <div className="modal-footer" style={{display:'flex',gap:10}}>
+            <button type="button" className="btn btn-outline" style={{flex:1}} onClick={onClose}>Cancelar</button>
+            <button type="submit" className="btn btn-primary" style={{flex:2}} disabled={saving}><Icons.Plus /> {saving ? 'Salvando…' : 'Criar Evento'}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// ── Events Page ──
+function EventsPage({ navigate, onNotify }) {
+  const { isAdmin } = useAdmin();
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [query, setQuery] = useState('');
+  const [status, setStatus] = useState('all');
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [editEvent, setEditEvent]     = useState(null);
+
+  useEffect(() => {
+    sb.from('events').select('*').order('created_at', { ascending: false })
+      .then(({ data, error }) => {
+        if (!error && data) setEvents(data);
+        setLoading(false);
+      });
+  }, []);
+
+  const deleteEvent = async id => {
+    if (!window.confirm('Excluir este evento?')) return;
+    const { error } = await sb.from('events').delete().eq('id', id);
+    if (!error) setEvents(prev => prev.filter(ev => ev.id !== id));
+  };
+
+  const sorted = useMemo(() => [...events].sort((a,b) => new Date(b.created_at||0) - new Date(a.created_at||0)), [events]);
+
+  const filtered = useMemo(() => sorted.filter(ev => {
+    const q = query.toLowerCase();
+    return (!q || ev.title.toLowerCase().includes(q) || ev.city.toLowerCase().includes(q) || ev.location.toLowerCase().includes(q))
+      && (status === 'all' || ev.status === status);
+  }), [sorted, query, status]);
+
+  return (
+    <>
+      <main>
+      <div className="events-header">
+        <div className="container">
+          <div className="badge badge-accent anim-label" style={{marginBottom:12}}><Icons.Camera /> {loading ? '…' : events.length} eventos no acervo</div>
+          <h1 className="anim-title">Encontre suas fotos</h1>
+          <p className="anim-subtitle">Busque pelo evento ou filtre por status.</p>
+        </div>
+      </div>
+
+      <div className="container" style={{paddingBottom:80}}>
+        {/* Busca */}
+        <div className="search-bar">
+          <span className="search-icon"><Icons.Search /></span>
+          <input type="text" placeholder="Buscar por evento, cidade ou local…" value={query} onChange={e => setQuery(e.target.value)} />
+          {query && <button style={{color:'var(--text-muted)',padding:'0 4px'}} onClick={() => setQuery('')}><Icons.X /></button>}
+        </div>
+
+        {/* Chips de status */}
+        <div className="filter-chips">
+          {[{v:'all',l:'Todos'},{v:'available',l:'Disponíveis'},{v:'editing',l:'Em edição'},{v:'soon',l:'Em breve'}].map(s => (
+            <button key={s.v} className={`chip${status===s.v?' active':''}`} onClick={() => setStatus(s.v)}>{s.l}</button>
+          ))}
+        </div>
+
+        {/* Botões de administração — somente admin */}
+        {isAdmin && (
+          <div style={{display:'flex',gap:12,marginBottom:24,flexWrap:'wrap'}}>
+            <button className="btn btn-primary btn-sm" onClick={()=>setShowAddModal(true)}><Icons.Plus /> Adicionar Evento</button>
+            <button className="btn btn-outline btn-sm"><Icons.Plus /> Adicionar Modalidade</button>
+          </div>
+        )}
+
+        {/* Contador */}
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:20,flexWrap:'wrap',gap:8}}>
+          <span style={{fontFamily:'var(--font-mono)',fontSize:'0.78rem',color:'var(--text-muted)'}}>
+            {filtered.length===0?'Nenhum evento':`${filtered.length} evento${filtered.length>1?'s':''}`} encontrado{filtered.length>1?'s':''}
+          </span>
+          {(query||status!=='all') && (
+            <button className="btn btn-ghost btn-sm" onClick={() => {setQuery('');setStatus('all');}}>Limpar filtros</button>
+          )}
+        </div>
+
+        {filtered.length===0 ? (
+          <div className="empty-state"><div className="empty-icon">🔍</div><h3>Nenhum evento encontrado</h3><p>Tente outros termos ou limpe os filtros.</p></div>
+        ) : (
+          <div className="events-grid">
+            {filtered.map(ev => <EventCard key={ev.id} event={ev} onNotify={onNotify} onDelete={deleteEvent}
+              onUpdate={updated => setEvents(prev => prev.map(e => e.id===updated.id ? updated : e))}
+              onOpenDetail={ev => navigate('event:'+ev.id)}
+              onOpenEdit={ev => setEditEvent(ev)} />)}
+          </div>
+        )}
+      </div>
+      </main>
+      {showAddModal && (
+        <AddEventModal
+          onClose={() => setShowAddModal(false)}
+          onAdd={ev => { setEvents(prev => [ev, ...prev]); setShowAddModal(false); setEditEvent(ev); }}
+        />
+      )}
+      {editEvent && (
+        <EditEventModal
+          event={editEvent}
+          onClose={() => setEditEvent(null)}
+          onSave={updated => {
+            setEvents(prev => prev.map(e => e.id===updated.id ? updated : e));
+            setEditEvent(null);
+          }}
+        />
+      )}
+    </>
+  );
+}
+
+// ── EditPortfolioItemModal ──
+function EditPortfolioItemModal({ item, onSave, onClose }) {
+  const [title, setTitle] = useState(item.title);
+  const [sport, setSport] = useState(item.sport);
+  const [size,  setSize]  = useState(item.size);
+  const sports = Object.keys(SPORT_COLORS);
+
+  return (
+    <div style={{position:'fixed',inset:0,zIndex:8000,background:'rgba(6,8,13,0.85)',display:'flex',alignItems:'center',justifyContent:'center',padding:20}} onClick={onClose}>
+      <div style={{width:'100%',maxWidth:420,background:'var(--bg-surface)',borderRadius:'var(--radius)',border:'1px solid var(--border-light)',overflow:'hidden'}} onClick={e=>e.stopPropagation()}>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'14px 20px',borderBottom:'1px solid var(--border)'}}>
+          <span style={{fontWeight:700,color:'var(--text-primary)'}}>Editar informações</span>
+          <button onClick={onClose} style={{width:30,height:30,borderRadius:8,background:'var(--bg-surface-3)',border:'1px solid var(--border)',color:'var(--text-secondary)',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer'}}><Icons.X /></button>
+        </div>
+        <div style={{padding:20,display:'flex',flexDirection:'column',gap:14}}>
+          <div className="form-group">
+            <label>Modalidade</label>
+            <select value={sport} onChange={e=>setSport(e.target.value)}>
+              {sports.map(s=><option key={s} value={s}>{s}</option>)}
+              <option value="Outro">Outro</option>
+            </select>
+          </div>
+          <div className="form-group">
+            <label>Proporção do card</label>
+            <select value={size} onChange={e=>setSize(e.target.value)}>
+              <option value="normal">Normal (4:3)</option>
+              <option value="tall">Vertical (2:3)</option>
+              <option value="wide">Horizontal (16:9)</option>
+            </select>
+          </div>
+          <div style={{display:'flex',gap:8,marginTop:4}}>
+            <button
+              style={{flex:1,padding:'10px',borderRadius:'var(--radius-sm)',background:'rgba(255,255,255,0.08)',border:'1px solid var(--accent)',color:'var(--accent-text)',fontFamily:'var(--font-mono)',fontSize:'0.75rem',cursor:'pointer',fontWeight:700}}
+              onClick={()=>onSave({...item, title:title.trim()||item.title, sport, size})}
+            >✓ Salvar</button>
+            <button
+              style={{padding:'10px 16px',borderRadius:'var(--radius-sm)',background:'var(--bg-surface-3)',border:'1px solid var(--border)',color:'var(--text-secondary)',fontFamily:'var(--font-mono)',fontSize:'0.75rem',cursor:'pointer'}}
+              onClick={onClose}
+            >Cancelar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Portfolio Page ──
+function PortfolioPage() {
+  const { isAdmin } = useAdmin();
+  const [items, setItems]         = useState([]);
+  const [loadingPortfolio, setLoadingPortfolio] = useState(true);
+  const [lightbox, setLightbox]     = useState(null);
+  const [editingItem, setEditingItem] = useState(null);
+  const [openMenuId, setOpenMenuId]   = useState(null);
+  const [dragOverId, setDragOverId]   = useState(null);
+  const dragId = useRef(null);
+  const uploadRefs = useRef({});
+
+  useEffect(() => {
+    sb.from('portfolio').select('*').order('sort_order', { ascending: true }).order('created_at', { ascending: false })
+      .then(({ data, error }) => {
+        if (!error && data) setItems(data);
+        setLoadingPortfolio(false);
+      });
+  }, []);
+
+  const reorderItems = async (fromId, toId) => {
+    if (fromId === toId) return;
+    setItems(prev => {
+      const arr   = [...prev];
+      const fromI = arr.findIndex(i => i.id === fromId);
+      const toI   = arr.findIndex(i => i.id === toId);
+      if (fromI < 0 || toI < 0) return prev;
+      const [moved] = arr.splice(fromI, 1);
+      arr.splice(toI, 0, moved);
+      // Persiste sort_order no Supabase
+      arr.forEach((item, idx) => {
+        sb.from('portfolio').update({ sort_order: idx }).eq('id', item.id);
+      });
+      return arr;
+    });
+  };
+
+  const nav = dir => setLightbox(i => (i+dir+items.length)%items.length);
+
+  const deleteItem = async id => {
+    if (!window.confirm('Excluir esta foto do portfólio?')) return;
+    const { error } = await sb.from('portfolio').delete().eq('id', id);
+    if (!error) { setItems(prev => prev.filter(i => i.id !== id)); setLightbox(null); }
+  };
+
+  const saveItem = async updated => {
+    const { id, created_at, ...fields } = updated;
+    const { data, error } = await sb.from('portfolio').update(fields).eq('id', id).select().single();
+    if (!error && data) setItems(prev => prev.map(i => i.id === data.id ? data : i));
+    setEditingItem(null);
+  };
+
+  const addItem = async () => {
+    const row = { title:'Nova foto', sport:'Corrida', size:'normal' };
+    const { data, error } = await sb.from('portfolio').insert(row).select().single();
+    if (!error && data) setItems(prev => [data, ...prev]);
+  };
+
+  // Fecha menu ao clicar fora
+  useEffect(() => {
+    if (!openMenuId) return;
+    const close = () => setOpenMenuId(null);
+    document.addEventListener('click', close);
+    return () => document.removeEventListener('click', close);
+  }, [openMenuId]);
+
+  return (
+    <main>
+      <div className="portfolio-header">
+        <div className="container">
+          <div className="badge badge-accent anim-label" style={{marginBottom:12}}><Icons.Image /> {loadingPortfolio ? '…' : items.length} fotos no portfólio</div>
+          <h1 className="anim-title">Portfólio</h1>
+          <p className="anim-subtitle" style={{color:'var(--text-secondary)',fontSize:'1.05rem'}}>
+            Uma seleção dos melhores momentos capturados em campo.
+          </p>
+        </div>
+      </div>
+
+      <div className="container" style={{paddingBottom:80}}>
+        {isAdmin && (
+          <div style={{display:'flex',gap:12,marginBottom:32,flexWrap:'wrap'}}>
+            <button className="btn btn-primary btn-sm" onClick={addItem}><Icons.Plus /> Adicionar Foto</button>
+          </div>
+        )}
+
+        <div className="masonry-grid">
+          {items.map((item,idx) => (
+            <div key={item.id} className="masonry-item"
+              style={{position:'relative', opacity: dragOverId===item.id ? 0.4 : 1, transition:'opacity 0.15s',
+                outline: dragOverId===item.id ? '2px dashed var(--accent)' : 'none'}}
+              onClick={() => { setOpenMenuId(null); setLightbox(idx); }}
+              onDragOver={isAdmin ? e => { e.preventDefault(); setDragOverId(item.id); } : undefined}
+              onDragLeave={isAdmin ? () => setDragOverId(null) : undefined}
+              onDrop={isAdmin ? e => { e.preventDefault(); setDragOverId(null); reorderItems(dragId.current, item.id); dragId.current = null; } : undefined}
+            >
+              {/* Alça de arrasto — somente admin */}
+              {isAdmin && (
+                <div
+                  draggable={true}
+                  onDragStart={e => { e.stopPropagation(); dragId.current = item.id; }}
+                  onDragEnd={() => { setDragOverId(null); dragId.current = null; }}
+                  onClick={e => e.stopPropagation()}
+                  title="Arrastar para reordenar"
+                  style={{
+                    position:'absolute', top:8, left:44, zIndex:25,
+                    width:28, height:28, borderRadius:'50%',
+                    background:'rgba(20,20,20,0.85)', border:'1px solid rgba(255,255,255,0.2)',
+                    color:'#fff', display:'flex', alignItems:'center', justifyContent:'center',
+                    cursor:'grab', fontSize:'14px', userSelect:'none',
+                  }}
+                >⠿</div>
+              )}
+              <CropableImage
+                sport={item.sport} label={item.title}
+                aspectRatio={SIZE_RATIO[item.size]||'4/3'}
+                externalInputRef={{ current: null, set: el => { if (uploadRefs.current) uploadRefs.current[item.id] = el; } }}
+                initialSrc={item.image_url}
+                initialPosX={item.image_pos_x} initialPosY={item.image_pos_y} initialScale={item.image_scale}
+                onSave={async (url, px, py, sc) => {
+                  const { data, error } = await sb.from('portfolio').update({ image_url: url, image_pos_x: px, image_pos_y: py, image_scale: sc }).eq('id', item.id).select().single();
+                  if (error) { console.error('Portfolio onSave error:', error); alert('Erro ao salvar: ' + error.message); return; }
+                  if (data) setItems(prev => prev.map(i => i.id === data.id ? data : i));
+                }}
+              />
+
+              {/* Overlay modalidade */}
+              <div className="item-overlay" style={{pointerEvents:'none'}}>
+                <div className="item-overlay-content">
+                  <span className="item-sport">{item.sport}</span>
+                </div>
+              </div>
+
+              {/* ── Botão menu (⋮) — somente admin ── */}
+              {isAdmin && <div style={{position:'absolute',top:8,left:8,zIndex:20}} onClick={e=>e.stopPropagation()}>
+                <button
+                  className="item-edit-btn"
+                  style={{right:'auto',position:'relative',top:'auto',left:'auto',opacity:1,width:32,height:32}}
+                  onClick={e=>{e.stopPropagation(); setOpenMenuId(v => v===item.id ? null : item.id);}}
+                  title="Opções"
+                >⋮</button>
+
+                {openMenuId === item.id && (
+                  <div style={{
+                    position:'absolute',top:'calc(100% + 4px)',left:0,
+                    background:'var(--bg-surface)',border:'1px solid var(--border-light)',
+                    borderRadius:'var(--radius-sm)',boxShadow:'0 8px 24px rgba(0,0,0,0.5)',
+                    minWidth:170,overflow:'hidden',zIndex:30,
+                  }}>
+                    {[
+                      { label:'✏️ Editar informações', action: () => { setEditingItem(item); setOpenMenuId(null); } },
+                      { label:'📁 Trocar foto',         action: () => { const r = uploadRefs.current[item.id]; if(r) r.click(); setOpenMenuId(null); } },
+                      { label:'🗑 Excluir card',        action: () => { setOpenMenuId(null); deleteItem(item.id); }, red: true },
+                    ].map(opt => (
+                      <button key={opt.label}
+                        style={{
+                          display:'block',width:'100%',textAlign:'left',padding:'10px 14px',
+                          background:'none',border:'none',
+                          fontFamily:'var(--font-mono)',fontSize:'0.72rem',
+                          color: opt.red ? '#f87171' : 'var(--text-secondary)',
+                          cursor:'pointer',borderBottom:'1px solid var(--border)',
+                        }}
+                        onMouseEnter={e=>e.currentTarget.style.background='var(--bg-surface-3)'}
+                        onMouseLeave={e=>e.currentTarget.style.background='none'}
+                        onClick={e=>{e.stopPropagation();opt.action();}}
+                      >{opt.label}</button>
+                    ))}
+                  </div>
+                )}
+              </div>}
+
+              {/* Botão excluir rápido — somente admin */}
+              {isAdmin && <button
+                onClick={e=>{e.stopPropagation();deleteItem(item.id);}}
+                title="Excluir"
+                style={{position:'absolute',top:8,right:8,zIndex:10,width:28,height:28,
+                  borderRadius:'50%',background:'rgba(239,68,68,0.85)',border:'none',
+                  color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',
+                  cursor:'pointer',opacity:0,transition:'opacity 0.2s'}}
+                className="item-delete-btn"
+              ><Icons.X /></button>}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {lightbox!==null && <Lightbox items={items} index={lightbox} onClose={() => setLightbox(null)} onNavigate={nav} />}
+      {editingItem && <EditPortfolioItemModal item={editingItem} onSave={saveItem} onClose={() => setEditingItem(null)} />}
+    </main>
+  );
+}
+
+// ── About Page ──
+function AboutPage({ navigate }) {
+  const aboutUploadRef = React.useRef();
+  const values = [
+    { icon:<Icons.Zap />,      title:'Agilidade',      desc:'Fotos editadas e disponíveis em até 24h após o evento.' },
+    { icon:<Icons.Search />,   title:'Fácil de achar', desc:'Busque pelo número de peito e encontre suas fotos em segundos.' },
+    { icon:<Icons.Shield />,   title:'Compra segura',  desc:'Pagamento processado em plataformas parceiras certificadas.' },
+    { icon:<Icons.Download />, title:'Alta resolução', desc:"Download em arquivo original sem compressão ou marca d'água." },
+  ];
+
+  return (
+    <main>
+      <div className="about-header">
+        <div className="container"><div className="badge badge-accent" style={{marginBottom:12}}><Icons.Camera /> Sobre</div></div>
+      </div>
+      <div className="container" style={{paddingBottom:80}}>
+        <div className="about-hero">
+          <div className="about-photo">
+            <CropableImage sport="Corrida" label="Alexandre Henrique" aspectRatio="3/4" externalInputRef={aboutUploadRef} />
+            <button
+              className="btn btn-outline btn-sm"
+              style={{width:'100%',justifyContent:'center',marginTop:12}}
+              onClick={() => aboutUploadRef.current && aboutUploadRef.current.click()}
+            >
+              ＋ Adicionar foto
+            </button>
+          </div>
+          <div className="about-content">
+            <div className="section-label anim-label">Quem sou eu</div>
+            <h1 className="anim-title">Alexandre Henrique</h1>
+
+            {/* 2. Novo parágrafo */}
+            <p>
+              Me chamo Alexandre Henrique, fotógrafo esportivo e encontrei no esporte o ambiente perfeito para a fotografia.
+              Em três anos de carreira, construí uma trajetória marcada pela cobertura de grandes eventos e competições,
+              atuando ao lado de atletas, clubes, federações, organizações esportivas e agências de comunicação em todo o Brasil.
+              Meu trabalho é transformar momentos reais do esporte em imagens que fortalecem marcas, preservam histórias e
+              ampliam a conexão entre pessoas e instituições.
+            </p>
+
+            <div className="values-grid">
+              {values.map(v => (
+                <div className="value-card" key={v.title}>
+                  <div className="value-icon">{v.icon}</div>
+                  <h4>{v.title}</h4>
+                  <p>{v.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* 3. Novos stats */}
+        <div style={{background:'var(--bg-surface)',border:'1px solid var(--border)',borderRadius:'var(--radius)',overflow:'hidden',marginBottom:48}}>
+          <div className="hero-stats" style={{borderRadius:0}}>
+            {[
+              { val:'200+',                   label:'Eventos cobertos' },
+              { val:'180+',                   label:'Fotos entregues' },
+              { val:'Todo o Brasil',          label:'Território' },
+              { val:'3',                      label:'Anos de experiência' },
+            ].map((s,i) => (
+              <div className="hero-stat" key={i}>
+                <div className="stat-val" style={s.val.length > 6 ? {fontSize:'1rem'} : {}}>{s.val}</div>
+                <div className="stat-label">{s.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="cta-strip">
+          <div>
+            <h2>Quer me ver em ação?</h2>
+            <p>Confira o portfólio completo ou encontre as fotos do seu evento agora.</p>
+          </div>
+          <div style={{display:'flex',gap:12,flexWrap:'wrap'}}>
+            <button className="btn btn-outline" onClick={() => navigate('portfolio')}>Ver portfólio</button>
+            <button className="btn btn-primary" onClick={() => navigate('events')}><Icons.Search /> Encontrar minhas fotos</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+}
+
+// ── Contato Page (antiga Contratação) ──
+function HirePage() {
+  const [form, setForm] = useState({name:'',email:'',phone:'',type:'',date:'',message:''});
+  const [errors, setErrors] = useState({});
+  const [done, setDone] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const set = (k,v) => setForm(f => ({...f,[k]:v}));
+  const validate = () => {
+    const e={};
+    if(!form.name.trim()) e.name='Nome obrigatório';
+    if(!form.email.trim()||!form.email.includes('@')) e.email='E-mail válido obrigatório';
+    if(!form.message.trim()) e.message='Mensagem obrigatória';
+    return e;
+  };
+  const submit = e => {
+    e.preventDefault(); const errs=validate();
+    if(Object.keys(errs).length){setErrors(errs);return;}
+    setErrors({}); setLoading(true); setTimeout(()=>{setLoading(false);setDone(true);},1000);
+  };
+
+  // 3. Nova lista "O que inclui"
+  const includes = [
+    'Material Completo',
+    'Entrega Rápida',
+    'Galeria online na plataforma parceira',
+    'Alta Resolução',
+  ];
+
+  return (
+    <main>
+      <div className="hire-header">
+        <div className="container">
+          <div className="badge badge-accent anim-label" style={{marginBottom:12}}><Icons.Camera /> Contato</div>
+          <h1 className="anim-title">Vamos trabalhar juntos</h1>
+          <p className="anim-subtitle" style={{color:'var(--text-secondary)',fontSize:'1.05rem'}}>Cobertura fotográfica completa para seu evento esportivo.</p>
+        </div>
+      </div>
+
+      <div className="container" style={{paddingBottom:80}}>
+        <div className="hire-layout">
+          {/* Sidebar de contato */}
+          <div className="hire-sidebar">
+            <h3>Contato direto</h3>
+            {/* 2. Botões estilizados WA + IG */}
+            <div style={{display:'flex',flexDirection:'column',gap:10,marginBottom:8}}>
+              <a className="social-btn social-btn-wa" href="https://wa.me/5544991586105" target="_blank" rel="noopener">
+                <Icons.WhatsApp /><span style={{fontWeight:800,letterSpacing:'0.06em'}}>WHATSAPP</span>
+              </a>
+              <a className="social-btn social-btn-ig" href="https://www.instagram.com/dmfotoesporte/" target="_blank" rel="noopener">
+                <Icons.Instagram /><span style={{fontWeight:800,letterSpacing:'0.06em'}}>INSTAGRAM</span>
+              </a>
+            </div>
+
+            <div style={{borderTop:'1px solid var(--border)',marginTop:20,paddingTop:20}}>
+              <div className="section-label" style={{marginBottom:8}}>O que inclui</div>
+              <ul className="includes-list">
+                {includes.map(item => <li key={item}><Icons.Check />{item}</li>)}
+              </ul>
+            </div>
+          </div>
+
+          {/* Formulário */}
+          <div className="hire-form">
+            {done ? (
+              <div className="success-state" style={{padding:'48px 24px'}}>
+                <div className="success-icon"><Icons.Check /></div>
+                <h3>Mensagem enviada!</h3>
+                <p>Obrigado pelo contato, <strong>{form.name}</strong>!<br />Retornarei em até 24h para alinharmos os detalhes da cobertura.</p>
+                <button className="btn btn-outline" style={{margin:'20px auto 0',display:'flex'}}
+                  onClick={()=>{setDone(false);setForm({name:'',email:'',phone:'',type:'',date:'',message:''});}}>
+                  Enviar outra mensagem
+                </button>
+              </div>
+            ) : (
+              <>
+                <h2>Solicitar orçamento</h2>
+                <p className="form-note">* campos obrigatórios</p>
+                <form onSubmit={submit} noValidate>
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label>Nome *</label>
+                      <input type="text" placeholder="Seu nome" className={errors.name?'error':''} value={form.name} onChange={e=>set('name',e.target.value)} />
+                      {errors.name && <span className="error-msg">{errors.name}</span>}
+                    </div>
+                    <div className="form-group">
+                      <label>E-mail *</label>
+                      <input type="email" placeholder="seu@email.com" className={errors.email?'error':''} value={form.email} onChange={e=>set('email',e.target.value)} />
+                      {errors.email && <span className="error-msg">{errors.email}</span>}
+                    </div>
+                  </div>
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label>Telefone</label>
+                      <input type="tel" placeholder="(44) 9 0000-0000" value={form.phone} onChange={e=>set('phone',e.target.value)} />
+                    </div>
+                    <div className="form-group">
+                      <label>Data do evento</label>
+                      <input type="date" value={form.date} onChange={e=>set('date',e.target.value)} />
+                    </div>
+                  </div>
+                  <div className="form-group">
+                    <label>Tipo de evento</label>
+                    <select value={form.type} onChange={e=>set('type',e.target.value)}>
+                      <option value="">Selecione a modalidade</option>
+                      {Object.keys(SPORT_COLORS).map(s=><option key={s} value={s}>{s}</option>)}
+                      <option value="Outro">Outro</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label>Mensagem *</label>
+                    <textarea placeholder="Conte um pouco sobre o evento: local, número de participantes, necessidades específicas…"
+                      className={errors.message?'error':''} value={form.message} onChange={e=>set('message',e.target.value)} />
+                    {errors.message && <span className="error-msg">{errors.message}</span>}
+                  </div>
+                  <button type="submit" className="btn btn-primary btn-lg" disabled={loading} style={{width:'100%',justifyContent:'center'}}>
+                    {loading ? <span className="btn-spinner"><span className="spinner" /> Enviando…</span> : <><Icons.ArrowRight /> Enviar mensagem</>}
+                  </button>
+                </form>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+}
+
+// ════════════════════════════════════════════════════════════════
+// EVENT DETAIL PAGE
+// ════════════════════════════════════════════════════════════════
+function EventDetailPage({ navigate, eventId, onNotify }) {
+  const [event, setEvent]   = useState(null);
+  const [photos, setPhotos] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Carrega evento
+    sb.from('events').select('*').eq('id', eventId).single()
+      .then(({ data }) => { if (data) setEvent(data); setLoading(false); });
+    // Carrega fotos
+    sb.from('event_photos').select('*').eq('event_id', eventId).order('position')
+      .then(({ data }) => { if (data) setPhotos(data); });
+  }, [eventId]);
+
+  if (loading) return (
+    <main style={{minHeight:'60vh',display:'flex',alignItems:'center',justifyContent:'center'}}>
+      <span style={{fontFamily:'var(--font-mono)',fontSize:'0.8rem',color:'var(--text-muted)'}}>Carregando…</span>
+    </main>
+  );
+
+  if (!event) return (
+    <main style={{minHeight:'60vh',display:'flex',alignItems:'center',justifyContent:'center'}}>
+      <span style={{fontFamily:'var(--font-mono)',fontSize:'0.8rem',color:'var(--text-muted)'}}>Evento não encontrado.</span>
+    </main>
+  );
+
+  const statusMap = { available:{cls:'badge-available',label:'Fotos disponíveis'}, editing:{cls:'badge-editing',label:'Em edição'}, soon:{cls:'badge-soon',label:'Em breve'} };
+  const st = statusMap[event.status] || statusMap.soon;
+  const dateStr = event.date ? new Date(event.date+'T12:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'}) : '';
+
+  return (
+    <main>
+      {/* Hero / capa */}
+      <div style={{position:'relative',width:'100%',height:'55vw',maxHeight:560,minHeight:280,overflow:'hidden',background:'var(--bg-surface-2)'}}>
+        {event.cover_url && (
+          <img src={event.cover_url} loading="lazy" style={{
+            position:'absolute',inset:0,width:'100%',height:'100%',
+            objectFit:'cover',objectPosition:`${event.cover_pos_x??50}% ${event.cover_pos_y??50}%`,
+          }} />
+        )}
+        <div style={{position:'absolute',inset:0,background:'linear-gradient(to bottom,rgba(0,0,0,0.2),rgba(8,8,8,0.85))'}} />
+        <div className="container" style={{position:'relative',zIndex:1,height:'100%',display:'flex',flexDirection:'column',justifyContent:'flex-end',paddingBottom:32}}>
+          <button onClick={() => navigate('events')} style={{
+            display:'inline-flex',alignItems:'center',gap:6,marginBottom:16,
+            background:'rgba(255,255,255,0.1)',border:'1px solid rgba(255,255,255,0.2)',
+            borderRadius:20,padding:'6px 14px',color:'#fff',cursor:'pointer',
+            fontFamily:'var(--font-mono)',fontSize:'0.68rem',letterSpacing:'0.06em',width:'fit-content'
+          }}>← Voltar para eventos</button>
+          <span className={`badge ${st.cls}`} style={{marginBottom:10,display:'inline-flex',width:'fit-content'}}><Dot />{st.label}</span>
+          <h1 style={{fontFamily:'var(--font-condensed)',fontStyle:'italic',fontWeight:900,
+            fontSize:'clamp(1.8rem,4vw,2.8rem)',textTransform:'uppercase',color:'#fff',
+            letterSpacing:'.02em',margin:0}}>
+            {event.title}
+          </h1>
+        </div>
+      </div>
+
+      <div className="container" style={{paddingTop:40,paddingBottom:80}}>
+        <div className="event-detail-info" style={{display:'flex',flexDirection:'row',flexWrap:'wrap',gap:16,alignItems:'flex-start',marginBottom:32,justifyContent:'space-between'}}>
+          {/* Infos */}
+          <div style={{display:'flex',flexWrap:'wrap',gap:12,alignItems:'center'}}>
+            {dateStr && <div style={{display:'flex',alignItems:'center',gap:6,color:'var(--text-secondary)',fontSize:'0.9rem'}}><Icons.Calendar />{dateStr}</div>}
+            {(event.location||event.city) && <div style={{display:'flex',alignItems:'center',gap:6,color:'var(--text-secondary)',fontSize:'0.9rem'}}><Icons.Pin />{[event.location,event.city].filter(Boolean).join(' · ')}</div>}
+            {event.sport && <span className="tag">{event.sport}</span>}
+            {event.photos > 0 && <span style={{color:'var(--text-secondary)',fontSize:'0.9rem',display:'flex',alignItems:'center',gap:4}}><Icons.Image />{event.photos.toLocaleString('pt-BR')} fotos</span>}
+          </div>
+          {/* CTA */}
+          {event.status === 'available' && event.store_url && (
+            <div className="event-detail-cta">
+              <a href={event.store_url} target="_blank" rel="noopener"
+                style={{display:'inline-flex',alignItems:'center',gap:8,padding:'12px 24px',
+                  borderRadius:'var(--radius-sm)',background:'#fff',color:'#080808',
+                  fontWeight:900,fontSize:'0.85rem',letterSpacing:'.06em',
+                  textTransform:'uppercase',textDecoration:'none',whiteSpace:'nowrap'}}>
+                🛒 Comprar minhas fotos <Icons.ExternalLink />
+              </a>
+            </div>
+          )}
+        </div>
+
+        {event.description && (
+          <p style={{color:'var(--text-secondary)',fontSize:'0.95rem',lineHeight:1.7,marginBottom:32,maxWidth:640}}>
+            {event.description}
+          </p>
+        )}
+
+        {/* Fotos */}
+        {photos.length > 0 ? (
+          <>
+            <div style={{fontFamily:'var(--font-mono)',fontSize:'0.65rem',textTransform:'uppercase',
+              letterSpacing:'0.08em',color:'var(--text-muted)',marginBottom:16}}>
+              {photos.length} foto{photos.length>1?'s':''} do evento
+            </div>
+            <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(200px,1fr))',gap:12}}>
+              {photos.map(p => (
+                <div key={p.id} style={{aspectRatio:'3/4',borderRadius:'var(--radius-sm)',overflow:'hidden',background:'var(--bg-surface-2)'}}>
+                  <img src={p.image_url} loading="lazy" style={{width:'100%',height:'100%',objectFit:'cover',
+                    transform:`scale(${p.scale||1}) translate(${(50-(p.pos_x??50))*0.5}%,${(50-(p.pos_y??50))*0.5}%)`,
+                    transformOrigin:'center center'}} />
+                </div>
+              ))}
+            </div>
+          </>
+        ) : (
+          <div style={{textAlign:'center',padding:'60px 0',color:'var(--text-muted)',
+            fontFamily:'var(--font-mono)',fontSize:'0.78rem',border:'1px dashed var(--border)',borderRadius:'var(--radius-sm)'}}>
+            Fotos em breve
+          </div>
+        )}
+
+        {/* CTA mobile */}
+        {event.status === 'available' && event.store_url && (
+          <div style={{marginTop:40}}>
+            <a href={event.store_url} target="_blank" rel="noopener"
+              style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8,
+                padding:'16px',borderRadius:'var(--radius-sm)',background:'#fff',color:'#080808',
+                fontWeight:900,fontSize:'0.9rem',letterSpacing:'.06em',
+                textTransform:'uppercase',textDecoration:'none'}}>
+              🛒 Comprar minhas fotos <Icons.ExternalLink />
+            </a>
+          </div>
+        )}
+
+        {event.status !== 'available' && (
+          <div style={{marginTop:40}}>
+            <button onClick={() => onNotify(event)}
+              style={{width:'100%',padding:'16px',borderRadius:'var(--radius-sm)',
+                background:'var(--bg-surface-2)',border:'1px solid var(--border-light)',
+                color:'var(--text-primary)',cursor:'pointer',display:'flex',
+                alignItems:'center',justifyContent:'center',gap:8,fontSize:'0.9rem',fontWeight:600}}>
+              <Icons.Bell /> Avise-me quando disponível
+            </button>
+          </div>
+        )}
+      </div>
+    </main>
+  );
+}
+
+// ════════════════════════════════════════════════════════════════
+// APP
+// ════════════════════════════════════════════════════════════════
+function App() {
+  const [page, setPage]         = useState('home');
+  const [notifyModal, setNotify]= useState(null);
+  const [isAdmin, setIsAdmin]   = useState(false);
+  const [showLogin, setShowLogin]= useState(false);
+
+  const navigate = id => { setPage(id); window.scrollTo({top:0,behavior:'smooth'}); };
+  const p = { navigate };
+
+  // Verifica sessão Supabase ao carregar e escuta mudanças de auth
+  useEffect(() => {
+    sb.auth.getSession().then(({ data: { session } }) => {
+      setIsAdmin(!!session);
+    });
+    const { data: { subscription } } = sb.auth.onAuthStateChange((_event, session) => {
+      setIsAdmin(!!session);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // Atalho de teclado Ctrl+Shift+A
+  useEffect(() => {
+    const onKey = e => {
+      if (e.ctrlKey && e.shiftKey && e.key === 'A') { e.preventDefault(); setShowLogin(true); }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, []);
+
+  const adminCtx = {
+    isAdmin,
+    openLogin: () => setShowLogin(true),
+    logout: () => sb.auth.signOut(),
+  };
+
+  const renderPage = () => {
+    if (page && page.startsWith('event:')) {
+      const eventId = page.replace('event:', '');
+      return <EventDetailPage {...p} eventId={eventId} onNotify={setNotify} />;
+    }
+    switch(page) {
+      case 'home':      return <HomePage      {...p} onNotify={setNotify} />;
+      case 'events':    return <EventsPage    {...p} onNotify={setNotify} />;
+      case 'portfolio': return <PortfolioPage {...p} />;
+      case 'about':     return <AboutPage     {...p} />;
+      case 'hire':      return <HirePage      {...p} />;
+      default:          return <HomePage      {...p} onNotify={setNotify} />;
+    }
+  };
+
+  return (
+    <AdminCtx.Provider value={adminCtx}>
+      <Navbar page={page} navigate={navigate} />
+      {renderPage()}
+      <Footer navigate={navigate} />
+      <TweaksPanel />
+      {notifyModal && <NotifyModal event={notifyModal} onClose={() => setNotify(null)} />}
+      {showLogin && (
+        <AdminLoginModal
+          onClose={() => setShowLogin(false)}
+          onSuccess={() => { setIsAdmin(true); setShowLogin(false); }}
+        />
+      )}
+    </AdminCtx.Provider>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
