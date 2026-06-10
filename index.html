@@ -912,12 +912,13 @@ function PhotoEditorModal({ src, aspectRatio, initialPosX, initialPosY, initialS
           onTouchEnd={e=>{e.stopPropagation();stopDrag();}}
         >
           <img src={src} draggable={false} style={{
-            position:'absolute',top:0,left:0,
-            width:'100%',height:'100%',
+            position:'absolute',
+            width: showFull ? '100%' : `${scale*100}%`,
+            height: showFull ? '100%' : `${scale*100}%`,
+            left: showFull ? '0' : `${(1-scale)*posX}%`,
+            top:  showFull ? '0' : `${(1-scale)*posY}%`,
             objectFit: showFull ? 'contain' : 'cover',
-            objectPosition:`${posX}% ${posY}%`,
-            transform:`scale(${scale})`,
-            transformOrigin:'center center',
+            objectPosition: showFull ? undefined : `${posX}% ${posY}%`,
             pointerEvents:'none',userSelect:'none',
           }} />
           {/* Grade de terços */}
@@ -962,21 +963,21 @@ function PhotoEditorModal({ src, aspectRatio, initialPosX, initialPosY, initialS
           </div>
 
           <div style={{display:'flex',flexDirection:'column',gap:8,marginTop:4}}>
-            <button
+            <button type="button"
               style={{width:'100%',padding:'9px',borderRadius:'var(--radius-sm)',
                 background: showFull ? 'rgba(255,255,255,0.12)' : 'var(--bg-surface-3)',
                 border:'1px solid var(--border-light)',
                 color:'var(--text-secondary)',fontFamily:'var(--font-mono)',fontSize:'0.72rem',cursor:'pointer'}}
               onClick={e=>{e.stopPropagation();setShowFull(v=>!v);}}
             >{showFull ? '🔲 Ver enquadrado' : '🖼 Ver foto completa'}</button>
-            <button
+            <button type="button"
               style={{width:'100%',padding:'11px',borderRadius:'var(--radius-sm)',
                 background:'rgba(255,255,255,0.08)',border:'1px solid var(--accent)',
                 color:'var(--accent-text)',fontFamily:'var(--font-mono)',fontSize:'0.78rem',
                 cursor:'pointer',fontWeight:700}}
               onClick={e=>{e.stopPropagation();onConfirm(posX,posY,scale);}}
             >✓ Confirmar posição</button>
-            <button
+            <button type="button"
               style={{width:'100%',padding:'9px',borderRadius:'var(--radius-sm)',
                 background:'var(--bg-surface-3)',border:'1px solid var(--border)',
                 color:'var(--text-secondary)',fontFamily:'var(--font-mono)',fontSize:'0.72rem',cursor:'pointer'}}
@@ -1251,11 +1252,11 @@ function CropableImage({ sport, label, aspectRatio, externalInputRef,
       onTouchEnd={isAdmin ? (e=>{e.stopPropagation();stopDrag();}) : undefined}
     >
       <img src={src} draggable={false} loading="lazy" style={{
-        position:'absolute',top:0,left:0,width:'100%',height:'100%',
+        position:'absolute',
+        width:`${scale*100}%`, height:`${scale*100}%`,
+        left:`${(1-scale)*posX}%`, top:`${(1-scale)*posY}%`,
         objectFit:'cover',
         objectPosition:`${posX}% ${posY}%`,
-        transform:`scale(${scale})`,
-        transformOrigin:'center center',
         userSelect:'none',pointerEvents:'none',
       }} />
 
@@ -1263,9 +1264,9 @@ function CropableImage({ sport, label, aspectRatio, externalInputRef,
       {isAdmin && (
         <>
           <div className="cropable-hover-overlay" onClick={e=>e.stopPropagation()}>
-            <button className="cropable-action-btn" onClick={e=>{e.stopPropagation();setPendingSrc(src);}} title="Ajustar">✏️ Ajustar</button>
-            <button className="cropable-action-btn" onClick={e=>{e.stopPropagation();inputRef.current&&inputRef.current.click();}} title="Trocar">📁 Trocar</button>
-            <button className="cropable-action-btn cropable-action-remove" onClick={e=>{e.stopPropagation();setSrc(null);setScale(1);setPosX(50);setPosY(50);if(onSave)onSave(null,50,50,1);}} title="Remover">🗑 Remover</button>
+            <button type="button" className="cropable-action-btn" onClick={e=>{e.stopPropagation();setPendingSrc(src);}} title="Ajustar">✏️ Ajustar</button>
+            <button type="button" className="cropable-action-btn" onClick={e=>{e.stopPropagation();inputRef.current&&inputRef.current.click();}} title="Trocar">📁 Trocar</button>
+            <button type="button" className="cropable-action-btn cropable-action-remove" onClick={e=>{e.stopPropagation();setSrc(null);setScale(1);setPosX(50);setPosY(50);if(onSave)onSave(null,50,50,1);}} title="Remover">🗑 Remover</button>
           </div>
           {pendingSrc && (
             <PhotoEditorModal src={pendingSrc} aspectRatio={aspectRatio}
