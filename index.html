@@ -3004,6 +3004,25 @@ function PortfolioPage() {
 // ── About Page ──
 function AboutPage({ navigate }) {
   const aboutUploadRef = React.useRef();
+  const ABOUT_POS = -99; // posição reservada para foto do Sobre
+  const [aboutPhoto, setAboutPhoto] = React.useState({ src: null, posX: 50, posY: 50, scale: 1 });
+
+  React.useEffect(() => {
+    sb.from('homepage_photos').select('*').eq('position', ABOUT_POS).maybeSingle().then(({ data }) => {
+      if (data) setAboutPhoto({ src: data.image_url, posX: data.image_pos_x ?? 50, posY: data.image_pos_y ?? 50, scale: data.image_scale ?? 1 });
+    });
+  }, []);
+
+  const handleAboutSave = async (url, px, py, sc) => {
+    setAboutPhoto({ src: url, posX: px, posY: py, scale: sc });
+    const existing = await sb.from('homepage_photos').select('id').eq('position', ABOUT_POS).maybeSingle();
+    if (existing.data) {
+      await sb.from('homepage_photos').update({ image_url: url, image_pos_x: px, image_pos_y: py, image_scale: sc }).eq('id', existing.data.id);
+    } else {
+      await sb.from('homepage_photos').insert({ position: ABOUT_POS, image_url: url, image_pos_x: px, image_pos_y: py, image_scale: sc });
+    }
+  };
+
   const values = [
     { icon:<Icons.Zap />,      title:'Agilidade',      desc:'Fotos editadas e disponíveis em até 24h após o evento.' },
     { icon:<Icons.Search />,   title:'Fácil de achar', desc:'Busque pelo número de peito e encontre suas fotos em segundos.' },
@@ -3019,7 +3038,9 @@ function AboutPage({ navigate }) {
       <div className="container" style={{paddingBottom:80}}>
         <div className="about-hero">
           <div className="about-photo">
-            <CropableImage sport="Corrida" label="Alexandre Henrique" aspectRatio="3/4" externalInputRef={aboutUploadRef} />
+            <CropableImage sport="Corrida" label="Alexandre Henrique" aspectRatio="3/4" externalInputRef={aboutUploadRef}
+              initialSrc={aboutPhoto.src} initialPosX={aboutPhoto.posX} initialPosY={aboutPhoto.posY} initialScale={aboutPhoto.scale}
+              onSave={handleAboutSave} />
             <button
               className="btn btn-outline btn-sm"
               style={{width:'100%',justifyContent:'center',marginTop:12}}
