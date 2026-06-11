@@ -1617,48 +1617,34 @@ function EditEventModal({ event, onClose, onSave }) {
 
   const fetchDisposicaoEdit = async () => {
     const url = dispUrl.trim();
-    if (!url || !url.includes('disposicao.com.br')) {
-      setFetchMsg({ ok:false, text:'Cole um link válido da Disposição (disposicao.com.br/…)' });
+    if (!url || !url.startsWith('http')) {
+      setFetchMsg({ ok:false, text:'Cole um link válido do evento.' });
       return;
     }
     setFetching(true);
     setFetchMsg(null);
     try {
-      // microlink.io busca server-side sem CORS, suporta seletores CSS customizados
-      const api = `https://api.microlink.io/?url=${encodeURIComponent(url)}`
-        + `&data.fotos.selector=.badge-meta&data.fotos.type=text`
-        + `&data.loc.selector=span%3Ahas(.fa-map-marker-alt)&data.loc.type=text`;
+      const api = `https://api.microlink.io/?url=${encodeURIComponent(url)}`;
       const res  = await fetch(api, { signal: AbortSignal.timeout(12000) });
       if (!res.ok) throw new Error('microlink falhou: ' + res.status);
       const json = await res.json();
       if (json.status !== 'success') throw new Error('microlink status: ' + json.status);
       const d = json.data;
 
-      const title = (d.title || '').trim();
+      const title = (d.title || '').replace(/\s*[-|].*$/, '').trim();
 
       let date = '';
-      const cdnUrl    = d.image?.url || d.logo?.url || '';
-      const dateMatch = cdnUrl.match(/galerias\/(\d{4}-\d{2}-\d{2})/);
+      const cdnUrl = d.image?.url || d.logo?.url || '';
+      const dateMatch = cdnUrl.match(/(\d{4}-\d{2}-\d{2})/);
       if (dateMatch) date = dateMatch[1];
-
-      let photos = 0;
-      const fotosMatch = (d.fotos || '').match(/(\d+)/);
-      if (fotosMatch) photos = parseInt(fotosMatch[1]);
-
-      let city = '';
-      const locRaw = (d.loc || '').replace(/<[^>]+>/g, '').trim();
-      if (locRaw) city = locRaw.replace(/-([A-Z]{2})$/, ', $1');
 
       const storeUrl = url.split('?')[0];
       set('title',    title    || form.title);
       set('date',     date     || form.date);
-      set('city',     city     || form.city);
-      set('photos',   photos   || form.photos);
-      set('store',    'Disposição');
       set('storeUrl', storeUrl || form.storeUrl);
 
-      const found = [title&&'título', date&&'data', city&&'cidade', photos&&`${photos} fotos`].filter(Boolean);
-      setFetchMsg({ ok:true, text:`✓ Importado: ${found.join(', ')}` });
+      const found = [title&&'título', date&&'data'].filter(Boolean);
+      setFetchMsg({ ok:true, text: found.length ? `✓ Importado: ${found.join(', ')}` : '✓ Link salvo. Preencha os campos manualmente.' });
     } catch(err) {
       setFetchMsg({ ok:false, text:'Erro ao buscar. Verifique o link e tente novamente.' });
       console.error('fetchDisposicaoEdit:', err);
@@ -1814,12 +1800,12 @@ function EditEventModal({ event, onClose, onSave }) {
             }}>
               <div style={{fontFamily:'var(--font-mono)',fontSize:'0.65rem',textTransform:'uppercase',
                 letterSpacing:'0.08em',color:'var(--accent-text)',marginBottom:8,display:'flex',alignItems:'center',gap:6}}>
-                <span>⚡</span> Importar dados da Disposição
+                <span>⚡</span> Importar dados do evento
               </div>
               <div style={{display:'flex',gap:8}}>
                 <input
                   style={{...inputStyle,flex:1,fontSize:'0.82rem',padding:'9px 12px'}}
-                  placeholder="https://dmfoto.disposicao.com.br/…"
+                  placeholder="https://banlek.com/album/… ou qualquer link do evento"
                   value={dispUrl}
                   onChange={e=>setDispUrl(e.target.value)}
                   onKeyDown={e=>e.key==='Enter'&&(e.preventDefault(),fetchDisposicaoEdit())}
@@ -2443,42 +2429,26 @@ function AddEventModal({ onClose, onAdd }) {
   // ── Busca dados da Disposição ──
   const fetchDisposicao = async () => {
     const url = dispUrl.trim();
-    if (!url || !url.includes('disposicao.com.br')) {
-      setFetchMsg({ ok:false, text:'Cole um link válido da Disposição (disposicao.com.br/…)' });
+    if (!url || !url.startsWith('http')) {
+      setFetchMsg({ ok:false, text:'Cole um link válido do evento.' });
       return;
     }
     setFetching(true);
     setFetchMsg(null);
     try {
-      // microlink.io busca server-side sem CORS, suporta seletores CSS customizados
-      const api = `https://api.microlink.io/?url=${encodeURIComponent(url)}`
-        + `&data.fotos.selector=.badge-meta&data.fotos.type=text`
-        + `&data.loc.selector=span%3Ahas(.fa-map-marker-alt)&data.loc.type=text`;
+      const api = `https://api.microlink.io/?url=${encodeURIComponent(url)}`;
       const res  = await fetch(api, { signal: AbortSignal.timeout(12000) });
       if (!res.ok) throw new Error('microlink falhou: ' + res.status);
       const json = await res.json();
       if (json.status !== 'success') throw new Error('microlink status: ' + json.status);
       const d = json.data;
 
-      // Título
-      const title = (d.title || '').trim();
+      const title = (d.title || '').replace(/\s*[-|].*$/, '').trim();
 
-      // Data: extraída da URL do CDN /galerias/YYYY-MM-DD-slug/
       let date = '';
       const cdnUrl = d.image?.url || d.logo?.url || '';
-      const dateMatch = cdnUrl.match(/galerias\/(\d{4}-\d{2}-\d{2})/);
+      const dateMatch = cdnUrl.match(/(\d{4}-\d{2}-\d{2})/);
       if (dateMatch) date = dateMatch[1];
-
-      // Quantidade de fotos: "377 fotos" → 377
-      let photos = 0;
-      const fotosText = d.fotos || '';
-      const fotosMatch = fotosText.match(/(\d+)/);
-      if (fotosMatch) photos = parseInt(fotosMatch[1]);
-
-      // Cidade: texto do span → "Munhoz de Melo-PR" → "Munhoz de Melo, PR"
-      let city = '';
-      const locRaw = (d.loc || '').replace(/<[^>]+>/g, '').trim();
-      if (locRaw) city = locRaw.replace(/-([A-Z]{2})$/, ', $1');
 
       const storeUrl = url.split('?')[0];
 
@@ -2486,19 +2456,11 @@ function AddEventModal({ onClose, onAdd }) {
         ...f,
         title:    title    || f.title,
         date:     date     || f.date,
-        city:     city     || f.city,
-        photos:   photos   || f.photos,
-        store:    'Disposição',
         storeUrl: storeUrl || f.storeUrl,
       }));
 
-      const found = [
-        title  && 'título',
-        date   && 'data',
-        city   && 'cidade',
-        photos && `${photos} fotos`,
-      ].filter(Boolean);
-      setFetchMsg({ ok:true, text:`✓ Importado: ${found.join(', ')}` });
+      const found = [title && 'título', date && 'data'].filter(Boolean);
+      setFetchMsg({ ok:true, text: found.length ? `✓ Importado: ${found.join(', ')}` : '✓ Link salvo. Preencha os campos manualmente.' });
     } catch(err) {
       setFetchMsg({ ok:false, text:'Erro ao buscar. Verifique o link e tente novamente.' });
       console.error('fetchDisposicao:', err);
@@ -2553,12 +2515,12 @@ function AddEventModal({ onClose, onAdd }) {
             }}>
               <div style={{fontFamily:'var(--font-mono)',fontSize:'0.65rem',textTransform:'uppercase',
                 letterSpacing:'0.08em',color:'var(--accent-text)',marginBottom:8,display:'flex',alignItems:'center',gap:6}}>
-                <span>⚡</span> Importar da Disposição
+                <span>⚡</span> Importar dados do evento
               </div>
               <div style={{display:'flex',gap:8}}>
                 <input
                   type="url"
-                  placeholder="https://disposicao.com.br/nome-do-evento"
+                  placeholder="https://banlek.com/album/… ou qualquer link do evento"
                   value={dispUrl}
                   onChange={e=>setDispUrl(e.target.value)}
                   onKeyDown={e=>e.key==='Enter'&&(e.preventDefault(),fetchDisposicao())}
