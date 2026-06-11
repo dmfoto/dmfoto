@@ -783,10 +783,47 @@ const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsI
 const sb = window.supabase.createClient(SUPA_URL, SUPA_KEY);
 
 // Upload de imagem para o Supabase Storage
+function compressImage(file, maxKB = 200) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const canvas = document.createElement('canvas');
+      let { width, height } = img;
+      // Reduz dimensões se necessário (máx 1920px)
+      const MAX_DIM = 1920;
+      if (width > MAX_DIM || height > MAX_DIM) {
+        if (width > height) { height = Math.round(height * MAX_DIM / width); width = MAX_DIM; }
+        else { width = Math.round(width * MAX_DIM / height); height = MAX_DIM; }
+      }
+      canvas.width = width;
+      canvas.height = height;
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+      // Comprime progressivamente até atingir o tamanho alvo
+      let quality = 0.85;
+      const tryCompress = () => {
+        canvas.toBlob(blob => {
+          if (!blob) return resolve(file);
+          if (blob.size <= maxKB * 1024 || quality <= 0.1) {
+            resolve(new File([blob], file.name.replace(/\.\w+$/, '.jpg'), { type: 'image/jpeg' }));
+          } else {
+            quality = Math.max(0.1, quality - 0.1);
+            tryCompress();
+          }
+        }, 'image/jpeg', quality);
+      };
+      tryCompress();
+    };
+    img.onerror = () => resolve(file);
+    img.src = url;
+  });
+}
+
 async function uploadImage(file) {
-  const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
-  const name = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-  const { error } = await sb.storage.from('photos').upload(name, file, { upsert: false });
+  const compressed = await compressImage(file, 200);
+  const name = `${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`;
+  const { error } = await sb.storage.from('photos').upload(name, compressed, { upsert: false });
   if (error) throw error;
   return sb.storage.from('photos').getPublicUrl(name).data.publicUrl;
 }
@@ -1892,9 +1929,9 @@ function EditEventModal({ event, onClose, onSave }) {
             setCropSlot(null);
             setUploading(index);
             try {
-              const ext = (file.name.split('.').pop()||'jpg').toLowerCase();
-              const fname = `evt-${event.id}-${index}-${Date.now()}.${ext}`;
-              const { error: upErr } = await sb.storage.from('photos').upload(fname, file, { upsert: true });
+              const compressed = await compressImage(file, 200);
+              const fname = `evt-${event.id}-${index}-${Date.now()}.jpg`;
+              const { error: upErr } = await sb.storage.from('photos').upload(fname, compressed, { upsert: true });
               if (upErr) { alert('Erro no upload: ' + upErr.message); return; }
               const url = sb.storage.from('photos').getPublicUrl(fname).data.publicUrl;
               const photoAtPos = eventPhotos.find(p => p.position === index);
