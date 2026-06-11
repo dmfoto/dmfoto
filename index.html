@@ -2011,12 +2011,30 @@ function Lightbox({ items, index, onClose, onNavigate }) {
     document.body.style.overflow = 'hidden';
     return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = ''; };
   }, [index]);
+
+  // Swipe support
+  const touchStart = useRef(null);
+  const handleTouchStart = e => { touchStart.current = e.touches[0].clientX; };
+  const handleTouchEnd = e => {
+    if (touchStart.current === null) return;
+    const diff = touchStart.current - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) onNavigate(diff > 0 ? 1 : -1);
+    touchStart.current = null;
+  };
+
   const item = items[index];
   return (
-    <div className="lightbox" onClick={e => e.target===e.currentTarget && onClose()}>
+    <div className="lightbox" onClick={e => e.target===e.currentTarget && onClose()}
+      onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
       <button className="lightbox-close" onClick={onClose}><Icons.X /></button>
       <button className="lightbox-nav prev" onClick={() => onNavigate(-1)}><Icons.ChevronLeft /></button>
-      <div className="lightbox-img"><PlaceholderImage sport={item.sport} label={item.title} aspectRatio={SIZE_RATIO[item.size]||'4/3'} /></div>
+      <div className="lightbox-img">
+        {item.image_url
+          ? <img src={item.image_url} alt={item.title} loading="lazy"
+              style={{maxWidth:'90vw',maxHeight:'85vh',objectFit:'contain',borderRadius:'var(--radius-sm)',display:'block'}} />
+          : <PlaceholderImage sport={item.sport} label={item.title} aspectRatio={SIZE_RATIO[item.size]||'4/3'} />
+        }
+      </div>
       <button className="lightbox-nav next" onClick={() => onNavigate(1)}><Icons.ChevronRight /></button>
       <div className="lightbox-info">
         <span className="lb-title">{item.title}</span>
