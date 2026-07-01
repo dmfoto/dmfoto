@@ -2274,7 +2274,11 @@ function HomePage({ navigate, onNotify }) {
 
   const totalPhotos = photoRows * 4;
 
+  const homeGalleryPhotos = homePhotos.filter(p => p.position >= 0).sort((a,b) => a.position - b.position);
+  const navHomeLightbox = dir => setHomeLightbox(i => (i + dir + homeGalleryPhotos.length) % homeGalleryPhotos.length);
+
   return (
+    <>
     <main>
       {/* ── Hero ── */}
       <section className="hero">
@@ -2442,25 +2446,21 @@ function HomePage({ navigate, onNotify }) {
         </div>
       </section>
     </main>
-    {homeLightbox !== null && (() => {
-      const photos = homePhotos.filter(p => p.position >= 0).sort((a,b) => a.position - b.position);
-      const nav = dir => setHomeLightbox(i => (i + dir + photos.length) % photos.length);
-      const item = photos[homeLightbox];
-      return (
-        <div className="lightbox" onClick={e => e.target === e.currentTarget && setHomeLightbox(null)}>
-          <button className="lightbox-close" onClick={() => setHomeLightbox(null)}><Icons.X /></button>
-          <button className="lightbox-nav prev" onClick={() => nav(-1)}><Icons.ChevronLeft /></button>
-          <div className="lightbox-img">
-            <img src={item?.image_url} alt="" loading="lazy"
-              style={{maxWidth:'90vw',maxHeight:'85vh',objectFit:'contain',borderRadius:'var(--radius-sm)',display:'block'}} />
-          </div>
-          <button className="lightbox-nav next" onClick={() => nav(1)}><Icons.ChevronRight /></button>
-          <div className="lightbox-info">
-            <span className="lightbox-counter">{homeLightbox + 1} / {photos.length}</span>
-          </div>
+    {homeLightbox !== null && (
+      <div className="lightbox" onClick={e => e.target === e.currentTarget && setHomeLightbox(null)}>
+        <button className="lightbox-close" onClick={() => setHomeLightbox(null)}><Icons.X /></button>
+        <button className="lightbox-nav prev" onClick={() => navHomeLightbox(-1)}><Icons.ChevronLeft /></button>
+        <div className="lightbox-img">
+          <img src={homeGalleryPhotos[homeLightbox]?.image_url} alt="" loading="lazy"
+            style={{maxWidth:'90vw',maxHeight:'85vh',objectFit:'contain',borderRadius:'var(--radius-sm)',display:'block'}} />
         </div>
-      );
-    })()}
+        <button className="lightbox-nav next" onClick={() => navHomeLightbox(1)}><Icons.ChevronRight /></button>
+        <div className="lightbox-info">
+          <span className="lightbox-counter">{homeLightbox + 1} / {homeGalleryPhotos.length}</span>
+        </div>
+      </div>
+    )}
+    </>
   );
 }
 
