@@ -928,7 +928,7 @@ function PhotoEditorModal({ src, aspectRatio, initialPosX, initialPosY, initialS
           flexDirection: sideLayout ? 'row' : 'column',
           alignItems: sideLayout ? 'flex-start' : 'stretch',
           maxWidth: sideLayout ? 860 : 620,
-          width:'100%', maxHeight:'95vh', overflow:'auto',
+          width:'100%', maxHeight:'95vh', overflowY:'auto', overflowX:'hidden',
         }}
         onClick={e=>e.stopPropagation()}
       >
@@ -997,9 +997,12 @@ function PhotoEditorModal({ src, aspectRatio, initialPosX, initialPosY, initialS
                 <span style={{fontSize:'1rem',minWidth:20}}>{s.icon}</span>
                 <span style={{fontFamily:'var(--font-mono)',fontSize:'0.65rem',color:'var(--text-muted)',minWidth:76}}>{s.label}</span>
                 <input type="range" min={s.min} max={s.max} step={s.step} value={s.val}
-                  style={{flex:1}}
-                  onMouseDown={e=>e.stopPropagation()} onTouchStart={e=>e.stopPropagation()}
-                  onChange={e=>s.set(Number(e.target.value))} />
+                  style={{flex:1, touchAction:'none'}}
+                  onMouseDown={e=>e.stopPropagation()}
+                  onTouchStart={e=>{e.stopPropagation();}}
+                  onTouchMove={e=>{e.stopPropagation();e.preventDefault();}}
+                  onChange={e=>s.set(Number(e.target.value))}
+                  onInput={e=>s.set(Number(e.target.value))} />
                 <span style={{fontFamily:'var(--font-mono)',fontSize:'0.68rem',color:'var(--accent-text)',minWidth:40,textAlign:'right'}}>{s.fmt(s.val)}</span>
               </div>
             ))}
