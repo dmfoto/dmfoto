@@ -751,10 +751,19 @@ footer { background: var(--bg-surface); border-top: 1px solid var(--border); pad
   .hero-actions .btn { width: 100%; justify-content: center; }
   .photo-gallery-grid { grid-template-columns: repeat(2,1fr); }
 }
+  /* Bloqueio de download de imagens */
+  img { -webkit-user-drag: none; user-drag: none; pointer-events: none; }
+  .cropable-wrap img, .lightbox img, .photo-gallery-grid img,
+  .masonry-item img, .hero-cover-img img { pointer-events: none !important; }
   </style>
 </head>
 <body>
   <div id="root"></div>
+  <script>
+    document.addEventListener('contextmenu', function(e) {
+      if (e.target.tagName === 'IMG') e.preventDefault();
+    });
+  </script>
 
   <script src="https://cdn.jsdelivr.net/npm/react@18.3.1/umd/react.production.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
@@ -2216,6 +2225,7 @@ function HomePage({ navigate, onNotify }) {
   const [coverX, setCoverX] = useState(50);
   const [coverY, setCoverY] = useState(50);
   const coverInputRef = React.useRef();
+  const [homeLightbox, setHomeLightbox] = useState(null);
 
   useEffect(() => {
     const upd = () => { setHeroLayout(window.__heroLayout||'left'); setHeroX(window.__heroX||0); };
@@ -2380,7 +2390,8 @@ function HomePage({ navigate, onNotify }) {
             {Array.from({length:totalPhotos}).map((_,i) => {
               const ph = homePhotos.find(p => p.position === i);
               return (
-                <div key={i} style={{borderRadius:'var(--radius-sm)',overflow:'hidden',border:'1.5px dashed var(--border-light)'}}>
+                <div key={i} style={{borderRadius:'var(--radius-sm)',overflow:'hidden',border:'1.5px dashed var(--border-light)',cursor: ph?.image_url ? 'pointer' : 'default'}}
+                  onClick={() => { if (!isAdmin && ph?.image_url) setHomeLightbox(homePhotos.filter(p=>p.position>=0).findIndex(p=>p.position===i)); }}>
                   <CropableImage
                     sport="Corrida" label={`Foto ${i+1}`} aspectRatio="4/5"
                     initialSrc={ph?.image_url}
@@ -2431,6 +2442,25 @@ function HomePage({ navigate, onNotify }) {
         </div>
       </section>
     </main>
+    {homeLightbox !== null && (() => {
+      const photos = homePhotos.filter(p => p.position >= 0).sort((a,b) => a.position - b.position);
+      const nav = dir => setHomeLightbox(i => (i + dir + photos.length) % photos.length);
+      const item = photos[homeLightbox];
+      return (
+        <div className="lightbox" onClick={e => e.target === e.currentTarget && setHomeLightbox(null)}>
+          <button className="lightbox-close" onClick={() => setHomeLightbox(null)}><Icons.X /></button>
+          <button className="lightbox-nav prev" onClick={() => nav(-1)}><Icons.ChevronLeft /></button>
+          <div className="lightbox-img">
+            <img src={item?.image_url} alt="" loading="lazy"
+              style={{maxWidth:'90vw',maxHeight:'85vh',objectFit:'contain',borderRadius:'var(--radius-sm)',display:'block'}} />
+          </div>
+          <button className="lightbox-nav next" onClick={() => nav(1)}><Icons.ChevronRight /></button>
+          <div className="lightbox-info">
+            <span className="lightbox-counter">{homeLightbox + 1} / {photos.length}</span>
+          </div>
+        </div>
+      );
+    })()}
   );
 }
 
