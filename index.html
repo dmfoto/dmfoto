@@ -2446,20 +2446,26 @@ function HomePage({ navigate, onNotify }) {
         </div>
       </section>
     </main>
-    {homeLightbox !== null && (
-      <div className="lightbox" onClick={e => e.target === e.currentTarget && setHomeLightbox(null)}>
-        <button className="lightbox-close" onClick={() => setHomeLightbox(null)}><Icons.X /></button>
-        <button className="lightbox-nav prev" onClick={() => navHomeLightbox(-1)}><Icons.ChevronLeft /></button>
-        <div className="lightbox-img">
-          <img src={homeGalleryPhotos[homeLightbox]?.image_url} alt="" loading="lazy"
-            style={{maxWidth:'90vw',maxHeight:'85vh',objectFit:'contain',borderRadius:'var(--radius-sm)',display:'block'}} />
+    {homeLightbox !== null && (() => {
+      let _touchStart = null;
+      return (
+        <div className="lightbox"
+          onClick={e => e.target === e.currentTarget && setHomeLightbox(null)}
+          onTouchStart={e => { _touchStart = e.touches[0].clientX; }}
+          onTouchEnd={e => { if(_touchStart===null) return; const diff=_touchStart-e.changedTouches[0].clientX; if(Math.abs(diff)>50) navHomeLightbox(diff>0?1:-1); _touchStart=null; }}>
+          <button className="lightbox-close" onClick={() => setHomeLightbox(null)}><Icons.X /></button>
+          <button className="lightbox-nav prev" onClick={() => navHomeLightbox(-1)}><Icons.ChevronLeft /></button>
+          <div className="lightbox-img">
+            <img src={homeGalleryPhotos[homeLightbox]?.image_url} alt="" loading="lazy"
+              style={{maxWidth:'90vw',maxHeight:'85vh',objectFit:'contain',borderRadius:'var(--radius-sm)',display:'block'}} />
+          </div>
+          <button className="lightbox-nav next" onClick={() => navHomeLightbox(1)}><Icons.ChevronRight /></button>
+          <div className="lightbox-info">
+            <span className="lightbox-counter">{homeLightbox + 1} / {homeGalleryPhotos.length}</span>
+          </div>
         </div>
-        <button className="lightbox-nav next" onClick={() => navHomeLightbox(1)}><Icons.ChevronRight /></button>
-        <div className="lightbox-info">
-          <span className="lightbox-counter">{homeLightbox + 1} / {homeGalleryPhotos.length}</span>
-        </div>
-      </div>
-    )}
+      );
+    })()}
     </>
   );
 }
