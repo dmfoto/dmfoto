@@ -2395,7 +2395,7 @@ function HomePage({ navigate, onNotify }) {
               const ph = homePhotos.find(p => p.position === i);
               return (
                 <div key={i} style={{borderRadius:'var(--radius-sm)',overflow:'hidden',border:'1.5px dashed var(--border-light)',cursor: ph?.image_url ? 'pointer' : 'default'}}
-                  onClick={() => { if (!isAdmin && ph?.image_url) setHomeLightbox(homePhotos.filter(p=>p.position>=0).findIndex(p=>p.position===i)); }}>
+                  onClick={() => { if (ph?.image_url) { const idx = homeGalleryPhotos.findIndex(p=>p.position===i); if(idx>=0) setHomeLightbox(idx); } }}>
                   <CropableImage
                     sport="Corrida" label={`Foto ${i+1}`} aspectRatio="4/5"
                     initialSrc={ph?.image_url}
